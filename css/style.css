@@ -1,0 +1,264 @@
+body, html {
+    overflow: hidden;
+}
+
+#editor {
+    position: absolute; 
+    background: transparent;
+    left: 0px; 
+    top: 10px;
+    bottom: 40px;
+    right: 10px;
+    text-shadow: rgba( 0, 0, 0, 1 ) 0px 1px 1px;
+}
+
+.uiButton {
+    margin-left: 8px;
+    margin-top: 4px;
+    width: 32px;
+    height: 32px;
+    float: left;
+    cursor: pointer;
+}
+
+.hide {
+    display: none;
+}
+
+.ui-widget{
+    font-size:12px;
+}
+.ui-tabs {
+    border: none;
+    background: transparent;
+    padding: .5em;
+}
+.ui-dialog {
+    background:rgba(0,0,0,0.4);
+}
+.ui-dialog-content {
+    padding: 0 !important;
+}
+.ui-widget-header {
+    background:rgba(128,128,128,0.4);
+}
+.ui-selectmenu-button {
+    background:rgba(255,255,255,0.4);
+}
+.ui-selectmenu-menu {
+    background:rgba(0,0,0,0.4);
+}
+.tabTable {
+    height: 150px;
+    overflow: auto;
+    text-shadow: rgba( 0, 0, 0, 1 ) 0px 1px 1px;
+    display: table;
+}
+
+.tRow {
+    display: table-row;
+    height: auto;
+}
+
+.leftColumn{
+    display: table-cell;
+    width: 60px;
+}
+
+.rightColumn {
+    display: table-cell;
+}
+
+
+.texTable {
+    /*height: 150px;*/
+    /*overflow: auto;*/
+    display: table;
+}
+
+.texRow {
+    display: table-row;
+    height: auto;
+}
+
+.texCell{
+    display: table-cell;
+    width: 60px;
+}
+.texCell > p{
+    padding-left: 5px;
+}
+
+.oscRow {
+    margin-bottom: 10px;
+}
+
+.codeHighlight {
+    word-wrap: break-word;
+    margin: 0;
+
+}
+.codeHighlight .ace-monokai{  
+    background-color: rgba(0,0,0,0.4);
+    padding: .5em;
+}
+#colorCorrectPanel > div {
+    width:250px;
+    margin-left: 10px;
+}
+#colorCorrectPanel p  {
+  margin-left: 20px;
+}
+
+#colorCorrectPanel p input {
+  width: 50px;
+  margin-left: 20px;
+}
+
+.textureSlot {
+    background-color:rgba(255,255,255,.5);
+    width: 60px;
+    height: 60px;
+    padding: 3px;
+    margin-top: 5px;
+    margin-left: 5px;
+    margin-right: 10px;
+    margin-bottom: 0;
+    border-radius: 4px;
+}
+.textureSlot:hover {
+    cursor: pointer;
+}
+
+.textureOption {
+    background-color:rgba(255,255,255,.25);
+    margin-top: 5px;
+    margin-left: 5px;
+    margin-bottom: 0;
+    padding: 3px;
+    border-radius: 4px;
+    overflow: hidden;
+    width: 60px;
+    height: 60px;
+}
+.textureOption:hover {
+    cursor: pointer;
+}
+
+#edgesPanel {
+}
+
+#socket_status {
+    background-color: rgba(255,255,255,0.5);
+    padding: 5px;
+}
+
+#footer {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 40px;
+    position:absolute;    
+}
+
+#fourBands {
+    top: 4px;
+    left: 10px;
+    width: 140px;
+    height: 32px;
+    position: absolute;
+}
+
+#footerUI {
+    position: relative;
+    left: 150px;
+    background-color:rgba(0,0,0,.4);
+}
+
+#selectQualityDIV, #selectQuality{
+    width: 50px;
+} 
+#selectFontSizeDIV,  #selectFontSize{
+    width: 60px;
+}
+
+#audioButton {
+    background: url('../images/micOff.png') no-repeat center;
+    background-size: 24px 24px;
+}
+
+#debug + label {
+    background: url('../images/debugOff.png') no-repeat center;
+    background-size: 24px 24px;
+}
+#debug:checked + label {
+    background:url('../images/debugOn.png') no-repeat center;
+    background-size: 24px 24px;
+}
+
+#texturing {
+    background: url('../images/textureOff.png') no-repeat center;
+    background-size: 24px 24px;
+}
+
+#edges {
+    background: url('../images/multiOff.png') no-repeat center;
+    background-size: 24px 24px;
+}
+
+#network {
+    background: url('../images/networkOff.png') no-repeat center;
+    background-size: 24px 24px;
+}
+
+#colorCorrectButton {
+    background: url('../images/colorCorrectOff.png') no-repeat center;
+    background-size: 24px 24px;
+}
+
+#openFile {
+    background: url('../images/open.png') no-repeat center;
+    background-size: 24px 24px;
+}
+
+#saveFile {
+    background: url('../images/save.png') no-repeat center;
+    background-size: 24px 24px;
+}
+
+#saveImage {
+    background: url('../images/saveImage.png') no-repeat center;
+    background-size: 24px 24px;
+}
+
+#play + label {
+    background: url('../images/pause.png') no-repeat center;
+    background-size: 24px 24px;
+}
+#play:checked + label {
+    background: url('../images/play.png') no-repeat center;
+    background-size: 24px 24px;
+}
+
+#funcButton {
+    background: url('../images/functionsOff.png') no-repeat center;
+    background-size: 24px 24px;
+}
+
+#myFullScreen + label {
+    background: url('../images/fullscreen.png') no-repeat center;
+    background-size: 24px 24px;
+}
+#myFullScreen:checked + label {
+    background: url('../images/fullscreen.png') no-repeat center;
+    background-size: 24px 24px;
+}
+
+#demogl {
+    left: 0px;
+    top: 0px;
+    cursor: pointer;
+    position: absolute;
+    display: block;
+    z-index: -10;
+}
