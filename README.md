@@ -47,5 +47,4 @@ https://github.com/eligrey/FileSaver.js
 https://github.com/eligrey/canvas-toBlob.js
 
 https://github.com/marmorkuchen-net/osc-js
-=======
->>>>>>> origin/gh-pages
+
