@@ -379,7 +379,7 @@ $( document ).ready(function()
             mSound = {};
             mSound.low = mSound.mid = mSound.upper = mSound.high = 0.0;
             mSound.mAnalyser = mAudioContext.createAnalyser();
-            // mSound.mAnalyser.smoothingTimeConstant = 0.25;
+            mSound.mAnalyser.smoothingTimeConstant = 0.5;
             mSound.mAnalyser.fft = 512; 
             mSound.mFreqData = new Uint8Array(mSound.mAnalyser.frequencyBinCount);
             mSound.mWaveData = new Uint8Array(512);
@@ -918,6 +918,7 @@ $( document ).ready(function()
     editor = ace.edit("editor");
     editor.session.setMode("ace/mode/glsl");
     editor.getSession().setUseWrapMode(true);
+    editor.setDisplayIndentGuides(false);
     editor.setTheme("ace/theme/monokai");
     // enable autocompletion and snippets
     editor.setOptions({
@@ -933,7 +934,7 @@ $( document ).ready(function()
     });
     editor.$blockScrolling = Infinity;
     editor.setValue("void main () {\n\tgl_FragColor = vec4(black, 1.0);\n}", -1);
-    
+   
     // mCodeMirror.on("drop", function( mCodeMirror, event )
     //             {
     //                 event.stopPropagation();
@@ -956,6 +957,7 @@ $( document ).ready(function()
 
     mTime = Date.now();
     renderLoop2();
+    editor.focus();
 });
 
 //document events

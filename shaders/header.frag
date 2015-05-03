@@ -44,6 +44,11 @@ float circle(float x,float y,float r,float f) {
     return 1.-smoothstep(r-f,r,d);
 }
 
+vec2 rotate(vec2 space, vec2 center, float amount){
+    return vec2(cos(amount) * (space.x - center.x) + sin(amount) * (space.y - center.y),
+        cos(amount) * (space.y - center.y) - sin(amount) * (space.x - center.x));
+}
+
 vec2 mod289(vec2 x) {
     return x - floor(x * (1.0/289.0)) * 289.0;
 }
@@ -55,8 +60,8 @@ vec3 permute(vec3 x) {
     return mod289(((x*34.0)+1.0)*x);
 }
 
+const vec4 C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439);
 float snoise(vec2 v){
-    const vec4 C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439);
     vec2 i  = floor(v + dot(v, C.yy));
     vec2 x0 = v -   i + dot(i, C.xx);
     vec2 i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
@@ -78,10 +83,57 @@ float snoise(vec2 v){
     return 130.0 * dot(m, g);
 }
 
+// float turb(vec2 fragCoord, float octave)
+// {
+//     float col = 0.0;
+//     vec2 xy,frac, tmp1, tmp2;
+//     float i2, amp, maxOct = octave;
+//     for (int i = 0; i < 8; i++)
+//     {
+//         amp = maxOct / octave;
+//         i2 = float(i);
+//         xy = fragCoord / octave;
+//         frac = fract(xy);
+//         tmp1 = mod(floor(xy) + resolution.xy, resolution.xy);
+//         tmp2 = mod(tmp1 + resolution.xy - 1.0, resolution.xy);
+//         col += frac.x * frac.y * rand(tmp1) / amp;
+//         col += frac.x * (1.0 - frac.y) * rand(vec2(tmp1.x, tmp2.y)) / amp;
+//         col += (1.0 - frac.x) * frac.y * rand(vec2(tmp2.x, tmp1.y)) / amp;
+//         col += (1.0 - frac.x) * (1.0 - frac.y) * rand(tmp2) / amp;
+//         octave /= 2.0;
+//     }
+//     return (col);
+// }
+
+float noise( vec2 point )
+{
+    vec2 p = floor( point );
+    vec2 f = fract( point );
+    return mix(
+        mix( rand( p + vec2( 0.0, 0.0 ) ), rand( p + vec2( 1.0, 0.0 ) ), f.x ),
+        mix( rand( p + vec2( 0.0, 1.0 ) ), rand( p + vec2( 1.0, 1.0 ) ), f.x ),
+        f.y
+    );
+}
+
+float fractal( vec2 point )
+{
+    float sum = 0.0;
+    float scale = 0.5;
+    for ( int i = 0; i < 7; i++ )
+    {
+        sum += noise( point ) * scale;
+        point *= 2.0;
+        scale /= 2.0;
+    }
+    
+    return sum;
+}
+
 vec3 sexy(void) {
     float star=0.0;
     vec3 cr = black;
-    for(int i = 0; i < 150; i++){
+    for(int i = 0; i < 100; i++){
     float tTime = float(i) * PI;
     vec2 p = vec2(rand(floor(-tTime * time*.005)), fract(time *0.1 +tTime));
     float   r = rand(uv.x);
@@ -100,5 +152,4 @@ vec2 nyanFrame(vec2 p, float rr) {
     float fr = floor( mod( 20.0*time+rr, 6.0 ) );
     p.x += fr*v;
     return p;
-    // return texture2D( channel0, p );
 }

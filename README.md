@@ -14,7 +14,7 @@ In addition to the standard OpenGL Fragment Shader language, the following are a
 - line in and microphone only work in Google Chrome
 - ctl key to hide/show overlay interface
 - 512 fft in row 0; waveform in row 1
-- keyboard data in row 0 of texture
+- keyboard data in row 0 of texture - not recently tested
 - open file is not totally safe; it's only checking for filename extension ".frag"
 - images save as .png
 
