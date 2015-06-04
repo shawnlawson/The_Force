@@ -249,9 +249,9 @@
                 <li><a href="#tabsHelp-2">Uniforms</a></li>
                 <li><a href="#tabsHelp-3">Addons</a></li>
                 <li><a href="#tabsHelp-4">Math</a></li>
-                <li><a href="#tabsHelp-5">Texture</a></li>
-                <li><a href="#tabsHelp-6">GL</a></li>
-                <li><a href="#tabsHelp-7">Snippets</a></li>
+                <li><a href="#tabsHelp-5">GL</a></li>
+                <li><a href="#tabsHelp-6">Snippets</a></li>
+                <li><a href="#tabsHelp-7">Info</a></li>
             </ul>
             <div id="tabsHelp-1">
                 <pre class="codeHighlight" ace-mode="ace/mode/glsl" ace-theme="ace/theme/monokai">
@@ -273,7 +273,7 @@ teal    = vec3(0.396,0.878,0.878);
 resolution      = vec2(canvas width, canvas height); // value in pixels, 
                                                      // divided by pixel 
                                                      // size
-time            = float; // system time
+time            = float;     // system time
 <!-- channelTime[4]  -->
 mouse           = vec4(mouse X, mouse Y, mouse click X, mouse click Y);
 date            = vec4(); 
@@ -294,12 +294,24 @@ uvN             = vec2(x, y); // this pixel on screen when
                               // coordinate system is: width 
                               // 0.0 to 1.0, height 0.0 to 1.0; 
                               // bottom-left of canvas is origin
-rand(float x)   = float values 0.0 to 1.0
-rand(vec2 p)    = vec2(0.0 to 1.0, 0.0 to 1.0);
-box(vec2(x, y), vec2(width, height), 
-    float(corner roundness),float(edge feathering));
-circle(float x,float y, float radius, float (edge feathering)) 
-snoise(vec2 v)  = float // values -1.0 to 1.0
+snoise( vec2 )  = float       // signed noise
+                              // returns random values -1.0 to 1.0
+rand( float )   = float       // returns random values 0.0 to 1.0
+rand( vec2 )    = vec2(0.0 to 1.0, 0.0 to 1.0);
+fractal( vec2 ) = float       // return random values 0.0 to 1.0
+rotate(vec2 pivot, 
+       vec2(x, y), 
+       float amount)
+
+box(vec2(x, y), 
+    vec2(width, height), 
+    float corner-roundness,
+    float edge-feathering);
+
+circle(float x,
+       float y, 
+       float radius, 
+       float edge-feathering) 
                 </pre>
             </div>
             <div id="tabsHelp-4">
@@ -314,7 +326,7 @@ asin(x)         // arc sine of angle
 acos(x)         // arc cosine of angle
 atan(y, x)      // arc tangent of (y, x)
 atan(y_over_x)  // arc tangent of y/x
-<!-- mamatrixCompMult(max, may) // multiply x by y component-wise -->
+mamatrixCompMult(max, may) // multiply x by y component-wise
 pow(x, y)       // x to y exponent; x^y
 exp(x)          // ex
 log(x)          // natural log
@@ -324,8 +336,8 @@ sqrt(x)         // square root; x^(1/2)
 inversesqrt(x)  // inverse square root; 1/(x^(1/2))
 abs(x)          // absolute value
 sign(x)         // returns -1.0, 0.0, or 1.0
-floor(x)        // nearesinteger &lt;      x
-ceil(x)         // nearesinteger >         x
+floor(x)        // nearest integer less than x
+ceil(x)         // nearest integer greater than x
 fract(x)        // x - floor(x)
 mod(x, y)       // modulus
 min(x, y)       // minimum value
@@ -334,7 +346,7 @@ clamp(x,        // keep x between minVal and maxVal
       minVal, 
       maxVal)         
 mix(x, y, a)    // linear blend of x and y using a. (lerp)
-step(edge, x)   // 0.0 if x &gt; edge, else 1.0
+step(edge, x)   // 0.0 if x less than edge, else 1.0
 smoothstep(edge0, // clip and smooth
            edge1,
            x)          
@@ -342,24 +354,34 @@ smoothstep(edge0, // clip and smooth
             </div>
             <div id="tabsHelp-5">
                 <pre class="codeHighlight" ace-mode="ace/mode/glsl" ace-theme="ace/theme/monokai">
+gl_FragCoord = vec4(x, y, z, w) // fragment position within 
+                                // frame buffer window coordinates
+
+gl_FragColor = vec4(r, g, b, a) // fragment color
+
+texture2D(tex, vec2) = vec4(r, g, b, a) // tex is a texture: channel0 ...
+                                        // channel3 or backbuffer
                 </pre>
             </div>
             <div id="tabsHelp-6">
                 <pre class="codeHighlight" ace-mode="ace/mode/glsl" ace-theme="ace/theme/monokai">
-// list of common fragment opengl functions
-gl_FragCoord = vec4(x, y, z, w) // fragment position within 
-                                // frame buffer window coordinates
-gl_PointCoord = vec2(x, y)  // fragment position within a point 
-                            // (point rasterization only) 0.0 to 
-                            // 1.0 for each component
-gl_FragColor = vec4(r, g, b, a) // fragment color
+forf    = for(float i = 0.0; i < float; i++){
+          }
+fori    = for(int i = 0; i < int; i++){
+          }
+iff     = if(false){
+          }
+vc     = vec2
+vvc    = vec3
+ft     = float
                 </pre>
             </div>
             <div id="tabsHelp-7">
                 <pre class="codeHighlight" ace-mode="ace/mode/glsl" ace-theme="ace/theme/monokai">
-forf
-fori
-iff
+// Created by: Shawn Lawson, http://shawnlawson.com
+
+// Github Respository: https://github.com/shawnlawson/The_Force
+
                 </pre>
             </div>
         </div>
