@@ -1,34 +1,32 @@
 <!DOCTYPE HTML>
-<html>
 
+<html>
 <head>
-    <title>-  - --== The Force ==-- -  -</title>
+    <title>- - --== The Force ==-- - -</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
     <link rel="icon" href="img/favicon.png">
     <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
-
     <link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css">
     <link rel="stylesheet" type="text/css" href="css/style.css">
-
     <script type="text/javascript" src="lib/jquery-2.1.1.min.js"></script>
     <script type="text/javascript" src="lib/jquery-ui.min.js"></script>
     <script type="text/javascript" src="lib/fpsmeter.js"></script>
-	<script type="text/javascript" src="lib/ace/ace.js"></script>
+    <script type="text/javascript" src="lib/ace/ace.js"></script>
     <script type="text/javascript" src="lib/ace/ext-language_tools.js"></script>
     <script type="text/javascript" src="lib/ace/ext-static_highlight.js"></script>
     <script type="text/javascript" src="lib/FileSaver.js"></script>
     <script type="text/javascript" src="lib/canvas-toBlob.js"></script>
-	<script type="text/javascript" src="lib/osc.js"></script>
+    <script type="text/javascript" src="lib/osc.js"></script>
+    <script src="http://connect.soundcloud.com/sdk.js"></script>
     <script type="text/javascript" src="js/openGL.js"></script>
     <script type="text/javascript" src="js/oscManager.js"></script>
-	<script type="text/javascript" src="js/pageGlobals.js"></script>
+    <script type="text/javascript" src="js/pageGlobals.js"></script>
 </head>
 
 <body>
     <!-- editor =================================================================================== -->
     <div id="editor"></div>
-    
     <!-- audio =================================================================================== -->
     <div id="audioPanel" title="Audio Input">
         <div id="audioTabs" class="myTabs">
@@ -40,29 +38,41 @@
                 <li><a href="#tabs-5">SoundCloud</a></li>
             </ul>
             <div id="tabs-1">
-                <input type="submit" id="soundOffButton" value="all audio off"/>
+                <input type="submit" id="soundOffButton" value="all audio off" />
             </div>
             <div id="tabs-2">
-                <input type="submit" id="micToggleButton" value="start microphone/line in"/>
-                <input type="checkbox" id="micTogglePlaythrough"><label for="micTogglePlaythrough">playthrough</label>  
+                <input type="submit" id="micToggleButton" value="start microphone/line in" />
+                <input type="checkbox" id="micTogglePlaythrough">
+                <label for="micTogglePlaythrough">playthrough</label>
             </div>
             <div id="tabs-3">
-                <input type="submit" id="myAudioServer" value="load file"/>
-                <input type="checkbox" id="myAudioServerLoop" value="loop"/>
-                <label for="myAudioServerLoop">loop</label>  
+                <input type="submit" id="myAudioServer" value="load file" />
+                <input type="checkbox" id="myAudioServerLoop" value="loop" />
+                <label for="myAudioServerLoop">loop</label>
             </div>
             <div id="tabs-4">
-                <input type="file" id="myAudioFile" accept="audio/*"/>
-                <input type="checkbox" id="myAudioFileLoop" value="loop"/>
-                <label for="myAudioFileLoop">loop</label>  
+                <input type="file" id="myAudioFile" accept="audio/*" />
+                <input type="checkbox" id="myAudioFileLoop" value="loop" />
+                <label for="myAudioFileLoop">loop</label>
             </div>
             <div id="tabs-5">
-                <p>nothing to see here</p>
+                <div id="trackInfoPanel">
+        <img id="infoImage" src="">
+        <div id="infoArtist"></div>
+        <div id="infoTrack"></div>
+    </div>
+    <div id="playerControls">
+        <form id="form">
+            <input id="input" placeholder="Paste Soundcloud URL here (https://soundcloud.com/artist/track)">
+            <button type="submit" id="submit"><i class="icon-play"></i></button><br>
+        </form>
+        <audio id="player" crossorigin="anonymous" controls="" autoplay="" preload autobuffer></audio>
+    </div>
+    <div id="messageBox">
+</div>
             </div>
         </div>
     </div>
-
-
     <!-- textures =================================================================================== -->
     <div id="texturePanel" title="Textures" class="texTable">
         <div class="tRow">
@@ -73,8 +83,8 @@
                 <p>Options</p>
             </div>
         </div>
-    	<div class="tRow">
-        	<div class="texCell" title="texture channel 0">
+        <div class="tRow">
+            <div class="texCell" title="texture channel 0">
                 <img id="texture0" value="0" class="textureSlot" src="presets/previz/void.png" />
             </div>
             <!-- none, keyboard, webcam, audio -->
@@ -92,132 +102,131 @@
             </div>
         </div>
         <div class="tRow">
-        	<div class="texCell" title="texture channel 1">
+            <div class="texCell" title="texture channel 1">
                 <img id="texture1" class="textureSlot" src="presets/previz/void.png" />
             </div>
-        <!-- bw noise, color noise, ,  -->
-            <div  class="texCell" title="noise bw">
+            <!-- bw noise, color noise, ,  -->
+            <div class="texCell" title="noise bw">
                 <img id="tex_noisebw" class="textureOption" src="presets/previz/noisebw.png" />
             </div>
-            <div  class="texCell" title="noise rgb">
+            <div class="texCell" title="noise rgb">
                 <img id="tex_noisecolor" class="textureOption" src="presets/previz/noisecolor.png" />
             </div>
-            <div  class="texCell" title="nyan animation">
+            <div class="texCell" title="nyan animation">
                 <img id="tex_nyan" class="textureOption" src="presets/previz/nyanIcon.png" />
             </div>
-            <div  class="texCell">
-                <img id="" class="textureOption" src="" />
-            </div>
-        </div>        	
-        <div class="tRow">
-            <div class="texCell" title="texture channel 2">
-                <img id="texture2" class="textureSlot" src="presets/previz/void.png" />
-            </div>    
-            <div  class="texCell">
-                <img id="" class="textureOption" src="" />
-            </div>
-            <div  class="texCell">
-                <img id="" class="textureOption" src="" />
-            </div>
-            <div  class="texCell">
-                <img id="" class="textureOption" src="" />
-            </div>
-            <div  class="texCell">
+            <div class="texCell">
                 <img id="" class="textureOption" src="" />
             </div>
         </div>
         <div class="tRow">
-        	<div class="texCell" title="texture channel 3">
+            <div class="texCell" title="texture channel 2">
+                <img id="texture2" class="textureSlot" src="presets/previz/void.png" />
+            </div>
+            <div class="texCell">
+                <img id="" class="textureOption" src="" />
+            </div>
+            <div class="texCell">
+                <img id="" class="textureOption" src="" />
+            </div>
+            <div class="texCell">
+                <img id="" class="textureOption" src="" />
+            </div>
+            <div class="texCell">
+                <img id="" class="textureOption" src="" />
+            </div>
+        </div>
+        <div class="tRow">
+            <div class="texCell" title="texture channel 3">
                 <img id="texture3" class="textureSlot" src="presets/previz/void.png" />
             </div>
-            <div  class="texCell">
+            <div class="texCell">
                 <img id="" class="textureOption" src="" />
             </div>
-            <div  class="texCell">
+            <div class="texCell">
                 <img id="" class="textureOption" src="" />
             </div>
-            <div  class="texCell">
+            <div class="texCell">
                 <img id="" class="textureOption" src="" />
             </div>
-            <div  class="texCell">
+            <div class="texCell">
                 <img id="" class="textureOption" src="" />
             </div>
-    	</div>
+        </div>
     </div>
-
     <!-- edge blending =================================================================================== -->
     <div id="edgesPanel" title="Projection Mapping -- Probably shouldn't use this">
         <form>
             <div id="radio">
-                <input type="radio" id="radio1" name="radio" value="1" checked="checked"><label for="radio1">Single Screen</label>
+                <input type="radio" id="radio1" name="radio" value="1" checked="checked">
+                <label for="radio1">Single Screen</label>
                 <!-- <input type="radio" id="radio2" name="radio"><label for="radio2">Choice 2</label> -->
-                <input type="radio" id="radio3" name="radio" value="3"><label for="radio3">Triple Screen</label>
+                <input type="radio" id="radio3" name="radio" value="3">
+                <label for="radio3">Triple Screen</label>
             </div>
         </form>
-
         <button id="testImage">Test Image</button>
         <button id="loadMapping">Load Mapping</button>
         <button id="saveMapping">Save Mapping</button>
-
-        <div id="edgesValues" >  
+        <div id="edgesValues">
             <p>left</p>
-            <input type="number" id="point1X" value="0.0" step="0.01"/>
-            <input type="number" id="point1Y" value="0.0" step="0.01"/>
-            <input type="number" id="scale1X" value="1.0" step="0.01"/>
-            <input type="number" id="scale1Y" value="1.0" step="0.01"/>
-            <input type="number" id="rotate1" value="0.0" step="0.01"/>
+            <input type="number" id="point1X" value="0.0" step="0.01" />
+            <input type="number" id="point1Y" value="0.0" step="0.01" />
+            <input type="number" id="scale1X" value="1.0" step="0.01" />
+            <input type="number" id="scale1Y" value="1.0" step="0.01" />
+            <input type="number" id="rotate1" value="0.0" step="0.01" />
             <br />
-            <input type="number" id="blend1X" value="0.0" step="0.01"/>
-            <input type="number" id="blend1Y" value="0.001" step="0.01"/>
-            <input type="number" id="blend1Z" value="0.3" step="0.01"/>
-            <input type="number" id="blend1W" value="0.01" step="0.01"/>
+            <input type="number" id="blend1X" value="0.0" step="0.01" />
+            <input type="number" id="blend1Y" value="0.001" step="0.01" />
+            <input type="number" id="blend1Z" value="0.3" step="0.01" />
+            <input type="number" id="blend1W" value="0.01" step="0.01" />
             <br />
             <p>center</p>
-           <input type="number" id="point2X" value="0.0" step="0.01"/>
-            <input type="number" id="point2Y" value="0.0" step="0.01"/>
-            <input type="number" id="scale2X" value="1.0" step="0.01"/>
-            <input type="number" id="scale2Y" value="1.0" step="0.01"/>
-            <input type="number" id="rotate2" value="0.0" step="0.01"/>
+            <input type="number" id="point2X" value="0.0" step="0.01" />
+            <input type="number" id="point2Y" value="0.0" step="0.01" />
+            <input type="number" id="scale2X" value="1.0" step="0.01" />
+            <input type="number" id="scale2Y" value="1.0" step="0.01" />
+            <input type="number" id="rotate2" value="0.0" step="0.01" />
             <br />
-            <input type="number" id="blend2X" value="0.3" step="0.01"/>
-            <input type="number" id="blend2Y" value="0.01" step="0.01"/>
-            <input type="number" id="blend2Z" value="0.6" step="0.01"/>
-            <input type="number" id="blend2W" value="0.01" step="0.01"/>
+            <input type="number" id="blend2X" value="0.3" step="0.01" />
+            <input type="number" id="blend2Y" value="0.01" step="0.01" />
+            <input type="number" id="blend2Z" value="0.6" step="0.01" />
+            <input type="number" id="blend2W" value="0.01" step="0.01" />
             <br />
             <p>right</p>
-           <input type="number" id="point3X" value="0.0" step="0.01"/>
-            <input type="number" id="point3Y" value="0.0" step="0.01"/>
-            <input type="number" id="scale3X" value="1.0" step="0.01"/>
-            <input type="number" id="scale3Y" value="1.0" step="0.01"/>
-            <input type="number" id="rotate3" value="0.0" step="0.01"/>
+            <input type="number" id="point3X" value="0.0" step="0.01" />
+            <input type="number" id="point3Y" value="0.0" step="0.01" />
+            <input type="number" id="scale3X" value="1.0" step="0.01" />
+            <input type="number" id="scale3Y" value="1.0" step="0.01" />
+            <input type="number" id="rotate3" value="0.0" step="0.01" />
             <br />
-            <input type="number" id="blend3X" value="0.6" step="0.01"/>
-            <input type="number" id="blend3Y" value="0.01" step="0.01"/>
-            <input type="number" id="blend3Z" value="1.0" step="0.01"/>
-            <input type="number" id="blend3W" value=".0001" step="0.01"/>
+            <input type="number" id="blend3X" value="0.6" step="0.01" />
+            <input type="number" id="blend3Y" value="0.01" step="0.01" />
+            <input type="number" id="blend3Z" value="1.0" step="0.01" />
+            <input type="number" id="blend3W" value=".0001" step="0.01" />
         </div>
     </div>
-
     <!-- osc =================================================================================== -->
     <div id="oscPanel" title="OSC Websocket">
         <p>OSC Websocket</p>
-        <input type="text" id="socket_address" value="localhost" class="hide"/>
-        <input type="text" id="socket_port" value="8000" class="hide"/>
-        <input type="submit" id="socket_start" value="Start"/>
-        <input type="submit" id="socket_stop" value="Stop"/>
+        <input type="text" id="socket_address" value="localhost" class="hide" />
+        <input type="text" id="socket_port" value="8000" class="hide" />
+        <input type="submit" id="socket_start" value="Start" />
+        <input type="submit" id="socket_stop" value="Stop" />
         <span id="socket_status">offline</span>
         <p>Listenting to - localhost:8000</p>
         <div id="myInputs">
-            <input type="submit" id="appendOSCInput" value="Add Input"/>
-            <br /><br />
+            <input type="submit" id="appendOSCInput" value="Add Input" />
+            <br />
+            <br />
         </div>
         <p>Sending to - localhost:7600</p>
         <div id="myOutputs">
-            <input type="submit" id="appendOSCOutput" value="Add Output"/>
-            <br /><br />
+            <input type="submit" id="appendOSCOutput" value="Add Output" />
+            <br />
+            <br />
         </div>
     </div>
-
     <!-- osc =================================================================================== -->
     <div id="colorCorrectPanel" title="Color Correction">
         <p>
@@ -315,7 +324,7 @@ circle(float x,
                 </pre>
             </div>
             <div id="tabsHelp-4">
-            <pre class="codeHighlight" ace-mode="ace/mode/glsl" ace-theme="ace/theme/monokai">
+                <pre class="codeHighlight" ace-mode="ace/mode/glsl" ace-theme="ace/theme/monokai">
 // list of common gles math functions
 radians(x)      // degrees to radians
 degrees(x)      // radians to degrees
@@ -386,11 +395,11 @@ ft     = float
             </div>
         </div>
     </div>
-
     <!-- footer UI =================================================================================== -->
     <div id="footer">
-    <div id="myFrameRate" ></div>
-    <canvas id="fourBands" width="100" height="32"></canvas>
+        <div id="myFrameRate"></div>
+        <canvas id="fourBands" width="100" height="32"></canvas>
+        <div id="audioClock"></div>
         <div id="footerUI">
             <div id="selectQualityDIV" class="uiButton" title="Pixel Size">
                 <select id="selectQuality">
@@ -401,8 +410,7 @@ ft     = float
                     <option value="8">8</option>
                 </select>
             </div>
-            
-           <div id="selectFontSizeDIV" class="uiButton" title="Text Size">
+            <div id="selectFontSizeDIV" class="uiButton" title="Text Size">
                 <select id="selectFontSize">
                     <option value="10">10</option>
                     <option value="12" selected="selected">12</option>
@@ -412,40 +420,27 @@ ft     = float
                     <option value="24">24</option>
                 </select>
             </div>
-
-            <input type="submit" id="audioButton" value="" class="uiButton" title="Audio Input"/>
-
-            <input type="checkbox" id="debug" value=""/>
+            <input type="submit" id="audioButton" value="" class="uiButton" title="Audio Input" />
+            <input type="checkbox" id="debug" value="" />
             <label for="debug" class="uiButton" title="Toggle Debugging"></label>
-
-            <input type="submit" id="texturing" value="" class="uiButton" title="Texture Panel"/>
-
-            <input type="submit" id="edges" value="" class="uiButton" title="Projection Mapping Panel"/>
-            <input type="file" id="mySettings" class="hide"/>
-
-            <input type="submit" id="network" value="" class="uiButton" title="OSC Panel"/>
-           
-            <input type="submit" id="colorCorrectButton" value="" class="uiButton" title="Color Correction Panel"/>
-
-            <input type="submit" id="openFile" value="" class="uiButton" title="Open Shader File"/>
-            <input type="file" id="myFile" class="hide"/>
-           
-            <input type="submit" id="saveFile" value="" class="uiButton" title="Save Shader File"/>
-           
-            <input type="submit" id="saveImage" value="" class="uiButton" title="Save PNG"/>
-           
-            <input type="checkbox" id="play" value=""/>
+            <input type="submit" id="texturing" value="" class="uiButton" title="Texture Panel" />
+            <input type="submit" id="edges" value="" class="uiButton" title="Projection Mapping Panel" />
+            <input type="file" id="mySettings" class="hide" />
+            <input type="submit" id="network" value="" class="uiButton" title="OSC Panel" />
+            <input type="submit" id="colorCorrectButton" value="" class="uiButton" title="Color Correction Panel" />
+            <input type="submit" id="openFile" value="" class="uiButton" title="Open Shader File" />
+            <input type="file" id="myFile" class="hide" />
+            <input type="submit" id="saveFile" value="" class="uiButton" title="Save Shader File" />
+            <input type="submit" id="saveImage" value="" class="uiButton" title="Save PNG" />
+            <input type="checkbox" id="play" value="" />
             <label for="play" class="uiButton" title="Toggle Rendering"></label>
-
-            <input type="submit" id="funcButton" value="" class="uiButton" title="Function Reference"/>
-          
-            <input type="checkbox" id="myFullScreen" value=""/>
+            <input type="submit" id="funcButton" value="" class="uiButton" title="Function Reference" />
+            <input type="checkbox" id="myFullScreen" value="" />
             <label for="myFullScreen" class="uiButton" title="Toggle Fullscreen"></label>
         </div>
     </div>
-
     <!-- canvas =================================================================================== -->
-		<canvas id="demogl"></canvas>
+    <canvas id="demogl"></canvas>
 </body>
 
 </html>

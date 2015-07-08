@@ -323,6 +323,21 @@ $( document ).ready(function()
 
             var audio = createAudioElement(urls, exts, "soundFile");
             $(this).after(audio);
+            // audio.addEventListener("timeupdate",function(){
+  //       var hr  = Math.floor(secs / 3600);
+  // var min = Math.floor((secs - (hr * 3600))/60);
+  // var sec = Math.floor(secs - (hr * 3600) -  (min * 60));
+
+  // if (min < 10){ 
+  //   min = "0" + min; 
+  // }
+  // if (sec < 10){ 
+  //   sec  = "0" + sec;
+  // }
+  //min + ':' + sec
+
+                // $("#audioClock").html(audio.currentTime);
+            // });
 
             mSound.mSource = mAudioContext.createMediaElementSource(audio);
            
@@ -952,12 +967,54 @@ $( document ).ready(function()
 
         meter.tick();
 
+        if($('#soundFile').length) {
+        var secs = $('#soundFile').get(0).currentTime;
+      //       var hr  = Math.floor(secs / 3600);
+      var min = Math.floor(secs / 60.);
+      var sec = Math.floor(secs) % 60;
+
+        if (min < 10)
+            min = "0" + min; 
+        if (sec < 10)
+            sec  = "0" + sec;
+
+        $("#audioClock").html(min + ':' + sec);
+    }
+
         paint();
     }
 
     mTime = Date.now();
     renderLoop2();
     editor.focus();
+
+    var player =  document.getElementById('player');
+    var uiUpdater = new UiUpdater();
+    initAudio();
+    player.crossorigin="anonymous";
+    var loader = new SoundcloudLoader(player,uiUpdater);
+
+    var audioSource = new SoundCloudAudioSource(player);
+    var form = document.getElementById('form');
+    var loadAndUpdate = function(trackUrl) {
+        loader.loadStream(trackUrl,
+            function() {
+                uiUpdater.clearInfoPanel();
+                audioSource.playStream(loader.streamUrl());
+                uiUpdater.update(loader);
+                setTimeout(uiUpdater.toggleControlPanel, 3000); // auto-hide the control panel
+            },
+            function() {
+                uiUpdater.displayMessage("Error", loader.errorMessage);
+            });
+    };
+
+form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        var trackUrl = document.getElementById('input').value;
+        loadAndUpdate(trackUrl);
+    });
+
 });
 
 //document events
@@ -1075,3 +1132,170 @@ function setShader(result, fromScript)
             editor.session.setAnnotations(tAnnotations);
     }
 }
+
+var SoundCloudAudioSource = function(player) {
+
+    var self = this;
+
+    mSound.mSource = mAudioContext.createMediaElementSource(player);
+    mSound.mSource.connect(mSound.mAnalyser);
+    mSound.mAnalyser.connect(mAudioContext.destination);
+    bandsOn = true;
+    // public properties and methods
+    this.volume = 0;
+    this.streamData = new Uint8Array(128);
+    this.playStream = function(streamUrl) {
+        // get the input stream from the audio element
+        player.addEventListener('ended', function(){
+            self.directStream('coasting');
+        });
+        player.setAttribute('src', streamUrl);
+        player.play();
+    };
+};
+
+/**
+ * Makes a request to the Soundcloud API and returns the JSON data.
+ */
+var SoundcloudLoader = function(player,uiUpdater) {
+    var self = this;
+    var client_id = "35ea0b79c8a17560443b72c2df925316"; // to get an ID go to http://developers.soundcloud.com/
+    this.sound = {};
+    this.streamUrl = "";
+    this.errorMessage = "";
+    this.player = player;
+    this.uiUpdater = uiUpdater;
+
+    /**
+     * Loads the JSON stream data object from the URL of the track (as given in the location bar of the browser when browsing Soundcloud),
+     * and on success it calls the callback passed to it (for example, used to then send the stream_url to the audiosource object).
+     * @param track_url
+     * @param callback
+     */
+    this.loadStream = function(track_url, successCallback, errorCallback) {
+        SC.initialize({
+            client_id: client_id
+        });
+        SC.get('/resolve', { url: track_url }, function(sound) {
+            if (sound.errors) {
+                self.errorMessage = "";
+                for (var i = 0; i < sound.errors.length; i++) {
+                    self.errorMessage += sound.errors[i].error_message + '<br>';
+                }
+                self.errorMessage += 'Make sure the URL has the correct format: https://soundcloud.com/user/title-of-the-track';
+                errorCallback();
+            } else {
+
+                if(sound.kind=="playlist"){
+                    self.sound = sound;
+                    self.streamPlaylistIndex = 0;
+                    self.streamUrl = function(){
+                        return sound.tracks[self.streamPlaylistIndex].stream_url + '?client_id=' + client_id;
+                    }
+                    successCallback();
+                }else{
+                    self.sound = sound;
+                    self.streamUrl = function(){ return sound.stream_url + '?client_id=' + client_id; };
+                    successCallback();
+                }
+            }
+        });
+    };
+
+
+    this.directStream = function(direction){
+        if(direction=='toggle'){
+            if (this.player.paused) {
+                this.player.play();
+            } else {
+                this.player.pause();
+            }
+        }
+        else if(this.sound.kind=="playlist"){
+            if(direction=='coasting') {
+                this.streamPlaylistIndex++;
+            }else if(direction=='forward') {
+                if(this.streamPlaylistIndex>=this.sound.track_count-1) this.streamPlaylistIndex = 0;
+                else this.streamPlaylistIndex++;
+            }else{
+                if(this.streamPlaylistIndex<=0) this.streamPlaylistIndex = this.sound.track_count-1;
+                else this.streamPlaylistIndex--;
+            }
+            if(this.streamPlaylistIndex>=0 && this.streamPlaylistIndex<=this.sound.track_count-1) {
+               this.player.setAttribute('src',this.streamUrl());
+               this.uiUpdater.update(this);
+               this.player.play();
+            }
+        }
+    }
+
+
+};
+
+/**
+ * Class to update the UI when a new sound is loaded
+ * @constructor
+ */
+var UiUpdater = function() {
+    var controlPanel = document.getElementById('controlPanel');
+    var trackInfoPanel = document.getElementById('trackInfoPanel');
+    var infoImage = document.getElementById('infoImage');
+    var infoArtist = document.getElementById('infoArtist');
+    var infoTrack = document.getElementById('infoTrack');
+    var messageBox = document.getElementById('messageBox');
+
+    this.clearInfoPanel = function() {
+        // first clear the current contents
+        infoArtist.innerHTML = "";
+        infoTrack.innerHTML = "";
+        trackInfoPanel.className = 'hidden';
+    };
+    this.update = function(loader) {
+        // update the track and artist into in the controlPanel
+        var artistLink = document.createElement('a');
+        artistLink.setAttribute('href', loader.sound.user.permalink_url);
+        artistLink.innerHTML = loader.sound.user.username;
+        var trackLink = document.createElement('a');
+        trackLink.setAttribute('href', loader.sound.permalink_url);
+
+        if(loader.sound.kind=="playlist"){
+            trackLink.innerHTML = "<p>" + loader.sound.tracks[loader.streamPlaylistIndex].title + "</p>" + "<p>"+loader.sound.title+"</p>";
+        }else{
+            trackLink.innerHTML = loader.sound.title;
+        }
+
+        var image = loader.sound.artwork_url ? loader.sound.artwork_url : loader.sound.user.avatar_url; // if no track artwork exists, use the user's avatar.
+        infoImage.setAttribute('src', image);
+
+        infoArtist.innerHTML = '';
+        infoArtist.appendChild(artistLink);
+
+        infoTrack.innerHTML = '';
+        infoTrack.appendChild(trackLink);
+
+        // display the track info panel
+        trackInfoPanel.className = '';
+
+        // add a hash to the URL so it can be shared or saved
+        var trackToken = loader.sound.permalink_url.substr(22);
+        window.location = '#' + trackToken;
+    };
+
+    this.displayMessage = function(title, message) {
+        messageBox.innerHTML = ''; // reset the contents
+
+        var titleElement = document.createElement('h3');
+        titleElement.innerHTML = title;
+
+        var messageElement = document.createElement('p');
+        messageElement.innerHTML = message;
+
+
+        messageBox.className = '';
+        // stick them into the container div
+        messageBox.appendChild(titleElement);
+        messageBox.appendChild(messageElement);
+        messageBox.appendChild(closeButton);
+    };
+};
+
