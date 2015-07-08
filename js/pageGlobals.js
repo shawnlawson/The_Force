@@ -1191,7 +1191,7 @@ var SoundcloudLoader = function(player,uiUpdater) {
                     self.streamPlaylistIndex = 0;
                     self.streamUrl = function(){
                         return sound.tracks[self.streamPlaylistIndex].stream_url + '?client_id=' + client_id;
-                    }
+                    };
                     successCallback();
                 }else{
                     self.sound = sound;
@@ -1227,7 +1227,7 @@ var SoundcloudLoader = function(player,uiUpdater) {
                this.player.play();
             }
         }
-    }
+    };
 
 
 };
