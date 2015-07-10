@@ -224,6 +224,7 @@ $( document ).ready(function()
         .click( function(event)
         {
             event.preventDefault();
+            mSound.mSource.disconnect();
             initAudio();
             $("#micTogglePlaythrough").button("disable");
         });
@@ -244,6 +245,7 @@ $( document ).ready(function()
                     {
                         mSound.mStream = stream;
                         mSound.mSource = mAudioContext.createMediaStreamSource(stream);
+                        mSound.mSource.disconnect();
                         mSound.mSource.connect(mSound.mAnalyser);
                     }, 
                     function() //failure
@@ -340,7 +342,7 @@ $( document ).ready(function()
             // });
 
             mSound.mSource = mAudioContext.createMediaElementSource(audio);
-           
+           mSound.mSource.disconnect();
             mSound.mSource.connect(mSound.mAnalyser);
             mSound.mSource.connect(mAudioContext.destination);
 
@@ -990,11 +992,11 @@ $( document ).ready(function()
 
     var player =  document.getElementById('player');
     var uiUpdater = new UiUpdater();
-    initAudio();
+    
     player.crossorigin="anonymous";
     var loader = new SoundcloudLoader(player,uiUpdater);
 
-    var audioSource = new SoundCloudAudioSource(player);
+    var audioSource = null;
     var form = document.getElementById('form');
     var loadAndUpdate = function(trackUrl) {
         loader.loadStream(trackUrl,
@@ -1010,6 +1012,8 @@ $( document ).ready(function()
     };
 
 form.addEventListener('submit', function(e) {
+    initAudio();
+    audioSource = new SoundCloudAudioSource(player);
         e.preventDefault();
         var trackUrl = document.getElementById('input').value;
         loadAndUpdate(trackUrl);
