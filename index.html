@@ -298,17 +298,24 @@ PI              = 3.14159;
 PI2             = 6.28318;
 uv              = vec2(x, y); // This pixel on screen when 
                               // coordinate system is: width
-                              //  -1.0 to 1.0, height -1.0 to 1.0;
+                              //  -width/height to width/height, height -1.0 to 1.0;
                               // center of canvas is origin
 uvN             = vec2(x, y); // this pixel on screen when 
                               // coordinate system is: width 
                               // 0.0 to 1.0, height 0.0 to 1.0; 
                               // bottom-left of canvas is origin
-snoise( vec2 )  = float       // signed noise
+noise( vec2 )   = float       // noise 0.0 to 1.0             
+snoise( vec2 )  = float       // signed noise -1.0 to 0.0
                               // returns random values -1.0 to 1.0
 rand( float )   = float       // returns random values 0.0 to 1.0
 rand( vec2 )    = vec2(0.0 to 1.0, 0.0 to 1.0);
 fractal( vec2 ) = float       // return random values 0.0 to 1.0
+turbulence( vec2,
+            float octaves ) = float    //returns random values 0.0 to 1.0
+voronoi( vec2 ) = float       // returns 0.0 to 1.0 with a smooth 
+                              // voronoi pattern
+hsv2rgb( vec3 ) = vec3        // convert hue, saturation, value to 
+                              // red, green, blue
 rotate(vec2 pivot, 
        vec2(x, y), 
        float amount)
