@@ -1041,8 +1041,8 @@ $(document)
         updateKeyboardDown(event.keyCode);
         if (event.ctrlKey === true)
         {
-            $("#footer").fadeToggle('slow', function(){});
-            $("#editor").fadeToggle('slow', function(){});
+            // $("#footer").fadeToggle('slow', function(){});
+            // $("#editor").fadeToggle('slow', function(){});
         }
     })
     .keyup( function( event )
