@@ -110,6 +110,11 @@ function createGlContext()
         mHeader = h[0];
         vsDraw = d[0];
         var res = newShader(vsDraw, fsNew);
+        if (res.mSuccess === false) 
+        {
+            console.log(res.mInfo); 
+            alert("error");
+        }
     }); //end $.when
 
     testTexture = gl.createTexture();
@@ -123,10 +128,11 @@ function createTarget(width, height)
 {
     var target = {};
 
-    if ( gl.isFramebuffer(target.framebuffer))
+
+    if (target.framebuffer &&  gl.isFramebuffer(target.framebuffer))
          gl.deleteFramebuffer(target.framebuffer);
 
-    if ( gl.isTexture(target.texture))
+    if (target.texture &&  gl.isTexture(target.texture))
          gl.deleteTexture(target.texture);
 
     target.framebuffer =  gl.createFramebuffer();
@@ -161,10 +167,14 @@ function setShaderFromEditor()
 
 function newShader(vs, shaderCode)
 {
-	var res = createShader(vs, mHeader + mInputsStr + mOSCStr + shaderCode, true);
+	var res = createShader(vs, mInputsStr + mOSCStr + mHeader + shaderCode);//, true);
 
 	if (res.mSuccess === false) 
-        return res.mInfo;
+    {
+            console.log(res.mInfo); 
+                return res.mInfo;
+        }
+    
 
 	if (mProgram !== null)
 		 gl.deleteProgram(mProgram);
@@ -196,7 +206,7 @@ function newShader(vs, shaderCode)
         }
     }
 
-	return null; //means success
+	return res; //means success
 }
 
 function createShader(vertShader, fragShader)

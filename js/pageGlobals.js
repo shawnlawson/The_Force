@@ -1039,10 +1039,10 @@ $(document)
     .keydown( function( event )
     {
         updateKeyboardDown(event.keyCode);
-        if (event.ctrlKey === true)
+        if (event.ctrlKey === true && event.shiftKey === true)
         {
-            // $("#footer").fadeToggle('slow', function(){});
-            // $("#editor").fadeToggle('slow', function(){});
+             $("#footer").fadeToggle('slow', function(){});
+             $("#editor").fadeToggle('slow', function(){});
         }
     })
     .keyup( function( event )

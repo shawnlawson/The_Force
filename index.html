@@ -296,11 +296,11 @@ backbuffer      = texture2D; // previous render frame
                 <pre class="codeHighlight" ace-mode="ace/mode/glsl" ace-theme="ace/theme/monokai">
 PI              = 3.14159;
 PI2             = 6.28318;
-uv              = vec2(x, y); // This pixel on screen when 
+uv()            = vec2(x, y); // This pixel on screen when 
                               // coordinate system is: width
                               //  -width/height to width/height, height -1.0 to 1.0;
                               // center of canvas is origin
-uvN             = vec2(x, y); // this pixel on screen when 
+uvN()             = vec2(x, y); // this pixel on screen when 
                               // coordinate system is: width 
                               // 0.0 to 1.0, height 0.0 to 1.0; 
                               // bottom-left of canvas is origin

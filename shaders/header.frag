@@ -1,5 +1,4 @@
 precision lowp float;
-// precision mediump float;
 
 uniform vec2      resolution;
 uniform float     time;
@@ -10,8 +9,8 @@ uniform vec3      channelResolution[4];
 uniform vec4      bands;
 uniform sampler2D backbuffer;
 
-const float PI = 3.14159;
-const float PI2 = 6.28318;
+float PI = 3.14159;
+float PI2 = 6.28318;
 
 vec3 black = vec3(0.0);
 vec3 white = vec3(1.0);
@@ -25,8 +24,8 @@ vec3 pink = vec3(.9,0.758,0.798);
 vec3 lime = vec3(0.361,0.969,0.282);
 vec3 teal = vec3(0.396,0.878,0.878);
 
-vec2 uv = (gl_FragCoord.xy / resolution * 2.0 -1.0) * vec2(resolution.x/resolution.y, 1.0);
-vec2 uvN = gl_FragCoord.xy / resolution;
+vec2 uvN(){return (gl_FragCoord.xy / resolution);}
+vec2 uv(){return (gl_FragCoord.xy / resolution * 2.0 -1.0) * vec2(resolution.x/resolution.y, 1.0);}  
 
 float rand(float x) {
     return fract(sin(x)*4536.2346);
@@ -40,7 +39,7 @@ float box(vec2 p,vec2 b,float r,float f) {
 }
 
 float circle(float x,float y,float r,float f) {
-    float d=distance(uv,vec2(x, y))/r;
+    float d=distance(uv(),vec2(x, y))/r;
     return 1.-smoothstep(r-f,r,d);
 }
 
@@ -157,14 +156,15 @@ vec3 hsv2rgb(vec3 c) {
 vec3 sexy(void) {
     float star=0.0;
     vec3 cr = black;
-    for(int i = 0; i < 100; i++){
+    for(int i = 0; i < 80; i++)
+    {
     float tTime = float(i) * PI;
     vec2 p = vec2(rand(floor(-tTime * time*.005)), fract(time *0.1 +tTime));
-    float   r = rand(uv.x);
-    star= r*(0.125*sin(time * (r * 5.0) + 20.0 * r) + 0.25);
-    cr += box(uvN-p.yx, vec2(0.005, 0.01), 0.0001, 0.0001) * star;
-    cr += circle(uvN.x-p.y, (uvN.y-p.x)*.6, .1, .01)*star;
-    cr += circle(uvN.x-p.y+.1, (uvN.y-p.x+.1)*.6, .06, .001)*star;}
+    float   r = rand(uv().x);
+    star= r*(0.3*sin(time * (r * 5.0) + 20.0 * r) + 0.25);
+    cr += box(uvN()-p.yx, vec2(0.005, 0.01), 0.001, 0.0001) * star;
+    cr += box(uvN()-p.yx * vec2(1.2, 3.0), vec2(0.005, 0.01), 0.001, 0.0001) * star;
+    }
     return vec3(cr * 1.5);
 }
 
