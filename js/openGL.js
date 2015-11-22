@@ -171,13 +171,13 @@ function newShader(vs, shaderCode)
 
 	if (res.mSuccess === false) 
     {
-            console.log(res.mInfo); 
-                return res.mInfo;
-        }
+        console.log(res.mInfo); 
+        return res;
+    }
 
-        if (typeof(Storage) !== "undefined"){
-            localStorage.lastValidCode= shaderCode;
-        }
+    if (typeof(Storage) !== "undefined"){
+        localStorage.lastValidCode= shaderCode;
+    }
     
 
 	if (mProgram !== null)

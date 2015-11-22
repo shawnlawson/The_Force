@@ -1113,10 +1113,10 @@ function setShader(result, fromScript)
         
     editor.session.clearAnnotations();
 
-    if (result !== null) 
+    if (result.mSuccess === false) 
     {
         var lineOffset = getHeaderSize();
-        var lines = result.match(/^.*((\r\n|\n|\r)|$)/gm);
+        var lines = result.mInfo.match(/^.*((\r\n|\n|\r)|$)/gm);
         var tAnnotations = [];
         for (var i = 0; i < lines.length; i++) {
             var parts = lines[i].split(":");
