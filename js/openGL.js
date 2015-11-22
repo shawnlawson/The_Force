@@ -174,6 +174,10 @@ function newShader(vs, shaderCode)
             console.log(res.mInfo); 
                 return res.mInfo;
         }
+
+        if (typeof(Storage) !== "undefined"){
+            localStorage.lastValidCode= shaderCode;
+        }
     
 
 	if (mProgram !== null)

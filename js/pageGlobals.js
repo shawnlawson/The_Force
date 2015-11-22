@@ -950,7 +950,11 @@ $( document ).ready(function()
                             mCompileTimer = setTimeout(setShaderFromEditor, 200);
     });
     editor.$blockScrolling = Infinity;
-    editor.setValue("void main () {\n\tgl_FragColor = vec4(black, 1.0);\n}", -1);
+    if (typeof(Storage) !== "undefined" && typeof(localStorage.lastValidCode) !== "undefined"){
+        editor.setValue(localStorage.lastValidCode,-1);
+    }else{
+        editor.setValue("void main () {\n\tgl_FragColor = vec4(black, 1.0);\n}", -1);
+    }
    
     // mCodeMirror.on("drop", function( mCodeMirror, event )
     //             {
