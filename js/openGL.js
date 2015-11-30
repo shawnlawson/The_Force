@@ -9,8 +9,9 @@ var mInputsStr = "";
 var mOSCStr= "";
 var vsScreen = null;
 var vsDraw = null;
+var elapsedBandPeaks = [0.0, 0.0, 0.0, 0.0];
 //unifoms
-var vertPosU, l2, l3, l4, l5, l6, l7, l8, ch0, ch1, ch2, ch3, ch4, bs, screenResU, screenTexU, screenBlendU, translateUniform, scaleUniform, rotateUniform, gammaU;
+var vertPosU, l2, l3, l4, l5, l6, l7, l8, ch0, ch1, ch2, ch3, ch4, bs, screenResU, screenTexU, screenBlendU, translateUniform, scaleUniform, rotateUniform, gammaU, bandsTimeU;
 var resos = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
 var oscM = [null, null, null, null, null, null, null, null, null, null];
 var gammaValues = [1.0, 1.0, 1.0, 1.0];
@@ -200,6 +201,7 @@ function newShader(vs, shaderCode)
     ch4 =  gl.getUniformLocation(mProgram, "backbuffer");
     
     bs =  gl.getUniformLocation(mProgram, "bands");
+    bandsTimeU = gl.getUniformLocation(mProgram, "bandsTime");
 
     //OSC uniforms
     for (var i = 0; i < oscM.length; i++)
@@ -515,9 +517,36 @@ function paint()
 
 	//minputs
 	//fourband sound
-    if (mSound && bandsOn || mAudioContext !== null)
+    if (mSound && bandsOn && mAudioContext !== null)
     {
-    	if (bs !== null)  gl.uniform4f(bs, mSound.low, mSound.mid, mSound.upper, mSound.high);
+    	if (bs !== null) { 
+
+            gl.uniform4f(bs, mSound.low, mSound.mid, mSound.upper, mSound.high);
+
+            if(bandsTimeU !== null) { //this is for per fft band time elapsed events
+                if(mSound.low > .7) 
+                    elapsedBandPeaks[0] = 0.0;
+                else 
+                    elapsedBandPeaks[0] += meter.duration * .001;
+
+                if(mSound.mid > .7) 
+                    elapsedBandPeaks[1] = 0.0;
+                else 
+                    elapsedBandPeaks[1] += meter.duration * .001;
+
+                if(mSound.upper > .7) 
+                    elapsedBandPeaks[2] = 0.0;
+                else 
+                    elapsedBandPeaks[2] += meter.duration * .001;
+
+                if(mSound.high > .7) 
+                    elapsedBandPeaks[3] = 0.0;
+                else 
+                    elapsedBandPeaks[3] += meter.duration * .001;
+
+                gl.uniform4f(bandsTimeU, elapsedBandPeaks[0], elapsedBandPeaks[1], elapsedBandPeaks[2], elapsedBandPeaks[4]);
+            }
+        }
     }
 
     for (var i = 0; i < mInputs.length; i++)
