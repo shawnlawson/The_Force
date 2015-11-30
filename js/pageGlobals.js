@@ -1136,8 +1136,10 @@ function setShader(result, fromScript)
             } 
         }
 
-        if(debugging)
+        if(debugging) {
+            console.log(result.mInfo); 
             editor.session.setAnnotations(tAnnotations);
+        }
     }
 }
 
