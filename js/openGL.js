@@ -172,7 +172,6 @@ function newShader(vs, shaderCode)
 
 	if (res.mSuccess === false) 
     {
-        console.log(res.mInfo); 
         return res;
     }
 
@@ -522,7 +521,7 @@ function paint()
     	if (bs !== null) { 
 
             gl.uniform4f(bs, mSound.low, mSound.mid, mSound.upper, mSound.high);
-
+        }
             if(bandsTimeU !== null) { //this is for per fft band time elapsed events
                 if(mSound.low > .7) 
                     elapsedBandPeaks[0] = 0.0;
@@ -546,7 +545,7 @@ function paint()
 
                 gl.uniform4f(bandsTimeU, elapsedBandPeaks[0], elapsedBandPeaks[1], elapsedBandPeaks[2], elapsedBandPeaks[4]);
             }
-        }
+        // }
     }
 
     for (var i = 0; i < mInputs.length; i++)
