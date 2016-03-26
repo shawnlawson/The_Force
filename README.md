@@ -17,6 +17,8 @@ In addition to the standard OpenGL Fragment Shader language, the following are a
 - keyboard data in row 0 of texture - not recently tested
 - open file is not totally safe; it's only checking for filename extension ".frag"
 - images save as .png
+- The_Force/shaderExperiments contains several examples to get you started
+- The_Force/help contains helpful documents
 
 ## To Do 
 
