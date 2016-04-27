@@ -3,7 +3,7 @@ import time, sys, os, pkg_resources
 import SocketServer
 
 from twisted.python import log
-from twisted.internet import reactor
+from twisted.internet import reactor, ssl
 from twisted.application import service
 from twisted.internet.protocol import DatagramProtocol, Protocol, Factory
 
@@ -11,7 +11,8 @@ from twisted.web.server import Site
 from twisted.web.static import File
 
 from autobahn.twisted.websocket import WebSocketServerProtocol, \
-                                       WebSocketServerFactory
+                                       WebSocketServerFactory, \
+                                       listenWS
 
 from autobahn.twisted.resource import WebSocketResource, \
                               HTTPChannelHixie76Aware
@@ -25,9 +26,11 @@ SERVER_WS_PORT = 8000
 SERVER_HTTP_PORT = 9000
 SERVER_HTTP_RESOURCES = 'web'
 
-#CLIENT_IP = '169.254.133.240'
-CLIENT_IP = '127.0.0.1'
-CLIENT_UDP_PORT = 7500
+CLIENT_IP = '192.168.0.31'
+CLIENT_UDP_PORT = 8888
+# CLIENT_IP = '127.0.0.1'
+# CLIENT_UDP_PORT = 7500
+
 
 # [HTTP] > [CLIENT WS] > [SERVER WS] > bridge > [SERVER UDP] > [CLIENT UDP]
 
@@ -96,11 +99,16 @@ if __name__ == '__main__':
 
   # websocket setup
 
-  wsAddress = 'ws://%s:%d' % (SERVER_IP, SERVER_WS_PORT)
+  wsAddress = 'wss://%s:%d' % (SERVER_IP, SERVER_WS_PORT)
+
+  contextFactory = ssl.DefaultOpenSSLContextFactory('/etc/apache2/ssl/localhost.key',
+                                                    '/etc/apache2/ssl/localhost.crt')
 
   factory = BridgedWebSocketServerFactory(wsAddress, False, False, bridge)
   factory.protocol = WebSocketServer
-  reactor.listenTCP(SERVER_WS_PORT, factory)
+  reactor.listenSSL(SERVER_WS_PORT, factory, contextFactory)
+
+  # reactor.listenTCP(SERVER_WS_PORT, factory)
 
   # http setup
 

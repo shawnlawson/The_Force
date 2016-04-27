@@ -1,10 +1,10 @@
 void main () {
-    vec2 uv = uv();
-    vec2 uvN = uvN();
+    vec2 st = uv();
+    vec2 stN = uvN();
     vec3 c = black;
     
-    vec2 uu = cos((uv) * (10.* bands.z));
-    vec2 vv =  sin((uv) * (10.* bands.y));
+    vec2 uu = cos((st) * (10.* bands.z));
+    vec2 vv =  sin((st) * (10.* bands.y));
     float y = snoise(uu * mod(time * .2, 1.) );
     float x = snoise(vv * mod(time * .5, 1.));
     
