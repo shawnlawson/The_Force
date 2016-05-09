@@ -236,6 +236,9 @@ $( document ).ready(function()
             event.preventDefault();
             navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
 
+            if (window.location.protocol != "https:") 
+                alert("Browser may not support microphone on non-secure connection. Please copy your code before changing protocol in the URL from http to https.");
+
             if (navigator.getUserMedia) 
             {
                 initAudio();
@@ -250,7 +253,7 @@ $( document ).ready(function()
                     }, 
                     function() //failure
                     {
-                        alert("Error getting user media stream.")
+                        alert("Error getting user media stream.");
                     });
 
                 $("#micTogglePlaythrough").button("enable");
