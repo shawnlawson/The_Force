@@ -17,8 +17,8 @@ In addition to the standard OpenGL Fragment Shader language, the following are a
 - keyboard data in row 0 of texture - not recently tested
 - open file is not totally safe; it's only checking for filename extension ".frag"
 - images save as .png
-- The_Force/shaderExperiments contains several examples to get you started
-- The_Force/help contains helpful documents
+- [The_Force/shaderExperiments](./help) contains several examples to get you started
+- [The_Force/help](./help) contains helpful documents, including **instructions to run local/offline (it's easy!)**
 
 ## To Do 
 
@@ -35,17 +35,10 @@ In addition to the standard OpenGL Fragment Shader language, the following are a
 
 ## Sources
 
-https://github.com/ajaxorg/ace
-
-http://darsa.in/fpsmeter/ also https://github.com/darsain/fpsmeter
-
-http://jquery.com
-
-http://www.flaticon.com
-
-https://github.com/eligrey/FileSaver.js
-
-https://github.com/eligrey/canvas-toBlob.js
-
-https://github.com/marmorkuchen-net/osc-js
-
+* https://github.com/ajaxorg/ace
+* http://darsa.in/fpsmeter/ also https://github.com/darsain/fpsmeter
+* http://jquery.com
+* http://www.flaticon.com
+* https://github.com/eligrey/FileSaver.js
+* https://github.com/eligrey/canvas-toBlob.js
+* https://github.com/marmorkuchen-net/osc-js
