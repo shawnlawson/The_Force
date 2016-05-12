@@ -13,6 +13,7 @@ In addition to the standard OpenGL Fragment Shader language, the following are a
 - [The_Force/shaderExperiments](./help) contains several examples to get you started
 - [The_Force/help](./help) contains helpful documents, including **instructions to run local/offline (it's easy!)**
 - line in and microphone only work in Google Chrome, and requires HTTPS
+- <kbd>ctrl</kbd>+<kbd>shift</kbd> will toggle text visibility
 - backbuffer is a copy of the previous frame's frontbuffer
 - ctl key to hide/show overlay interface
 - 512 fft in row 0; waveform in row 1
