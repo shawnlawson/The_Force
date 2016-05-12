@@ -1,3 +1,16 @@
+### Python
+
+Simple, but assumes you've got Python (anyway you should if you are on OS X; if in doubt, just run `python --version`).
+
+You can do this instantly, but you won't be able to use the microphone input (requires HTTPS)
+
+```bash
+cd /path/to/the_force
+python -m SimpleHTTPServer 80    # or whatever other port you want.
+```
+
+**To use HTTPS with `SimpleHTTPServer` is actually pretty simple!** Just follow [these instructions](https://gist.github.com/dergachev/7028596). Then when you access the URL just don't forget the `https` in the URL. You'll have to "accept" the invalid HTTPS certificate, but that's fine, it's just little old you.
+
 ### Apache
 
 ##### this guide assumes you've not made a bunch of changes to the default apache2 config
@@ -37,11 +50,3 @@
 - navigate to http://localhost/the_force
     you should see The_Force IDE!
 
-### Python
-
-Simpler but may have some limitations. For example you must use HTTPS to use microphone input, and this way won't allow HTTPS right out of box.
-
-```bash
-cd /path/to/the_force
-python -m SimpleHTTPServer 80    # or whatever other port you want.
-```
