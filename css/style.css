@@ -10,7 +10,14 @@ body, html {
     top: 10px;
     bottom: 40px;
     right: 10px;
-    text-shadow: rgba( 0, 0, 0, 1 ) 0px 1px 1px;
+      text-shadow: +1px +2px 0ex black,
+               +1px -2px 0ex black,
+               -1px +2px 0ex black,
+               -1px -2px 0ex black,
+               +2px +1px 0ex black,
+               +2px -1px 0ex black,
+               -2px +1px 0ex black,
+               -2px -1px 0ex black;
 }
 
 .uiButton {
@@ -99,7 +106,7 @@ body, html {
     margin: 0;
 
 }
-.codeHighlight .ace-monokai{  
+.codeHighlight .ace-monokai{
     background-color: rgba(0,0,0,0.4);
     padding: .5em;
 }
@@ -262,6 +269,17 @@ body, html {
 }
 #myFullScreen:checked + label {
     background: url('../images/fullscreen.png') no-repeat center;
+    background-size: 24px 24px;
+}
+
+
+/* TODO(hangtwenty): need real icons, but don't know how to do that */
+#toggleText + label {
+    background: url('../images/toggleTextOn.png') no-repeat center;
+    background-size: 24px 24px;
+}
+#toggleText:checked + label {
+    background: url('../images/toggleTextOff.png') no-repeat center;
     background-size: 24px 24px;
 }
 

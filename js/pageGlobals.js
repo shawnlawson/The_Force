@@ -17,6 +17,7 @@ var bandsOn = false;
 var mTime;
 var whichSlot;
 var debugging = false;
+var textVisible = true;
 var numScreens = 1;
 
 //for ace editor
@@ -63,6 +64,14 @@ $( document ).ready(function()
         .on("selectmenuchange", function(event) 
         {
             document.getElementById('editor').style.fontSize = $("#selectFontSize").val()+'px';
+        });
+
+    $("#toggleText")
+        .button()
+        .bind("change", function()
+        {
+            textVisible = !textVisible;
+            $('#editor').toggle(textVisible);
         });
 
     $("#audioButton")
