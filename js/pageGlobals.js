@@ -65,6 +65,20 @@ $( document ).ready(function()
             document.getElementById('editor').style.fontSize = $("#selectFontSize").val()+'px';
         });
 
+    $("#selectMIDIIn")
+        .selectmenu({})
+        .on("selectmenuchange", function(event)
+        {
+
+        });
+
+    $("#selectMIDIOut")
+        .selectmenu({})
+        .on("selectmenuchange", function(event)
+        {
+            
+        });
+
     $("#audioButton")
         .button()
         .click( function() 
@@ -855,9 +869,9 @@ $( document ).ready(function()
     
     function fixSliderValue(input)
     {
-        if( input < .2 )
+        if (input < .2)
             return .2;
-        if( input > 2.2)
+        if (input > 2.2)
             return 2.2;
         
         return input;
@@ -882,8 +896,10 @@ $( document ).ready(function()
 
     $("#helpTabs")
         .tabs();
+    $("#networkTabs")
+        .tabs();
 
-    var highlight = ace.require("ace/ext/static_highlight")
+    var highlight = ace.require("ace/ext/static_highlight");
 
     function qsa(sel) {
         return Array.apply(null, document.querySelectorAll(sel));
