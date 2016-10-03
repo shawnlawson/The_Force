@@ -69,8 +69,8 @@ function initOSC() {
     		if (messageIndex < 9) {
     	        $("#myInputs").append(
                     '<div class="oscRow">\
-                    <input type="text" id="inOSCtext' + messageIndex + '" value="/in"/>\
-                    <input type="text" id="inOSCUniform' + messageIndex + '" value="in"/>\
+                    <input type="text" id="inOSCtext' + messageIndex + '" value="/analogInput"/>\
+                    <input type="text" id="inOSCUniform' + messageIndex + '" value="analogInput"/>\
                     <button type="submit" id="inOSCenable' + messageIndex + '" onclick="enableOSCMessage(' + messageIndex + ')">Enable</button>\
                     <button type="submit" id="inOSCdisable' + messageIndex + '" onclick="disableOSCMessage(' + messageIndex + ')">Disable</button>\
                     <span id="x' + messageIndex + '" style="color:rgba(255,0,0,0.5);">-</span>\
@@ -95,6 +95,8 @@ function initOSC() {
                     '<div class="oscRow">\
                     <input type="text" id="outOSCAddr' + sendIndex + '" value="/out"/>\
                     <input type="text" id="outOSCPattern' + sendIndex + '" value="out"/>\
+                    <input type="text" id="outOSCMath' + sendIndex + '" value="%10/10"/>\
+                    <input type="text" id="outOSCLine' + sendIndex + '" value="0"/>\
                     <button id="outOSCenable' + sendIndex + '" onclick="enableOSCMessageOut(' + sendIndex + ')">Enable</button>\
                     <button id="outOSCdisable' + sendIndex + '" onclick="disableOSCMessageOut(' + sendIndex + ')">Disable</button>\
                     <span id="rawOutMessages' + sendIndex + '">-</span>\
@@ -105,7 +107,16 @@ function initOSC() {
                 sendIndex += 1;
             }
         });
+        //immedate messaging
 
+    $("#myConsole").keyup(function(event){
+      if(event.which == 13){
+        var message = new OSC.Message($("#consoleMessage").val(), 
+                                      parseFloat($("#consoleValue").val()),
+                                      parseInt($("#consoleLine").val()));
+            osc.send(message);
+    }});
+    
 }
 
 function sendOSCMessages() 
@@ -117,7 +128,8 @@ function sendOSCMessages()
         {
             var pattern = new RegExp($("#outOSCPattern" + i).val(), "g");
             var count = str.match(pattern);
-            var message = new OSC.Message($("#outOSCAddr" + i).val(), count.length);
+            var mathValue = eval(count.length + $("#outOSCMath" + i).val() );
+            var message = new OSC.Message($("#outOSCAddr" + i).val(), mathValue, parseInt($("#outOSCLine" + i).val()));
             osc.send(message);
 
             if ($('#oscPanel').length)//onscreen
@@ -181,7 +193,7 @@ function disableOSCMessage(whom)
     $("#inOSCenable" + whom).button('enable');
     $("#inOSCdisable" + whom).button('disable');
 
-    osc.off(oscM[whom].uniName, oscM[whom].listener)
+    osc.off($("#inOSCtext" + whom).val(), oscM[whom].listener);
     oscM[whom] = null;
 }
 
