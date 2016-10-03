@@ -168,7 +168,7 @@ function setShaderFromEditor()
 
 function newShader(vs, shaderCode)
 {
-	var res = createShader(vs, mInputsStr + mOSCStr + mHeader + shaderCode);//, true);
+	var res = createShader(vs, mHeader + mInputsStr + mOSCStr + shaderCode);//, true);
 
 	if (res.mSuccess === false) 
     {
@@ -336,7 +336,9 @@ function createOSCUniforms()
 
         if (inp !== null)
         {
-            mOSCStr += "uniform vec4 " + $('#inOSCUniform'+i).val() + ";\n";
+            // mOSCStr += "uniform vec4 " + $('#inOSCUniform'+i).val() + ";\n";
+            // mOSCStr += "uniform vec4 " + oscM[i].uniName + ";\n";
+            mOSCStr = "uniform vec4 analogInput;"
         }
     }
 }

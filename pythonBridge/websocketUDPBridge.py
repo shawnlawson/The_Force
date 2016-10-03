@@ -19,17 +19,19 @@ from autobahn.twisted.resource import WebSocketResource, \
 
 # constants
 
-SERVER_IP = '169.254.118.168'
-# SERVER_IP = '127.0.0.1'
+# Me to receive
+SERVER_IP = '127.0.0.1'
 SERVER_UDP_PORT = 7600
 SERVER_WS_PORT = 8000
 SERVER_HTTP_PORT = 9000
 SERVER_HTTP_RESOURCES = 'web'
 
-CLIENT_IP = '192.168.0.31'
-CLIENT_UDP_PORT = 8888
+# To someone/thing else
+CLIENT_IP = '10.0.0.1'
+CLIENT_UDP_PORT = 7500
 # CLIENT_IP = '127.0.0.1'
-# CLIENT_UDP_PORT = 7500
+# CLIENT_UDP_PORT = 8888
+
 
 
 # [HTTP] > [CLIENT WS] > [SERVER WS] > bridge > [SERVER UDP] > [CLIENT UDP]
@@ -84,6 +86,7 @@ class WebSocketServer(WebSocketServerProtocol):
     print 'Client connecting: {0}'.format(request.peer)
 
   def onMessage(self, payload, isBinary):
+    # print payload
     self.factory.bridge.websocketToUdp(payload)
 
   def onClose(self, wasClean, code, reason):
