@@ -1,12 +1,15 @@
 var midi = null; // global MIDIAccess object
-var selectMIDI = null;
 var midiIn = null;
+var midiOut = null;
+var midiData = Array.apply(null, Array(128)).map(function() {
+    return 0; });
 
 function onMIDISuccess(midiAccess) {
     console.log("MIDI ready!");
     midi = midiAccess; // store in the global (in real usage, would probably keep in an object instance)
     // midi.onstatechange = do something here like assign a function
     listInputsAndOutputs(midi);
+
 }
 
 function onMIDIFailure(msg) {
@@ -21,7 +24,7 @@ function populateMIDIInSelect() {
     for (var entry of midi.inputs) {
         var input = entry[1];
 
-        if (midiIn && midiIn == input) {
+        if (midiIn && midiIn == input.name) {
             $('#selectMIDIIn').append('<option val="' + input.id + '" selected="selected">' + input.name + '</option>');
         } else {
             $('#selectMIDIIn').append('<option val="' + input.id + '">' + input.name + '</option>');
@@ -58,48 +61,36 @@ function onMIDIMessage(event) {
     }
     // console.log(str);
 
-    /*
-     // Mask off the lower nibble (MIDI channel, which we don't care about)
-     var channel = ev.data[0] & 0xf;
-      switch (event.data[0] & 0xf0) {
+    // Mask off the lower nibble (MIDI channel, which we don't care about)
+    // var channel = ev.data[0] & 0xf;
+    switch (event.data[0] & 0xf0) {
         case 0x90:
-          if (event.data[2]!=0) {  // if velocity != 0, this is a note-on message
-            noteOn(event.data[1]);
-            return;
-          }
-          // if velocity == 0, fall thru: it's a note-off.  MIDI's weird, y'all.
+            if (event.data[2] != 0) { // if velocity != 0, this is a note-on message
+                // noteOn(event.data[1]);
+                midiData[event.data[1]] = 1;
+                break;
+            }
+            // if velocity == 0, fall thru: it's a note-off.  MIDI's weird, y'all.
+            
         case 0x80:
-          noteOff(event.data[1]);
-          return;
-      }
-      */
+            // noteOff(event.data[1]);
+            midiData[event.data[1]] = 0;
+            break;
+    }
+
     if ($('#oscPanel').length) //onscreen
     {
         $("#MIDIMessages").html(str);
     }
 }
 
-function noteOn(noteNumber) {
-    activeNotes.push(noteNumber);
-    oscillator.frequency.cancelScheduledValues(0);
-    oscillator.frequency.setTargetAtTime(frequencyFromNoteNumber(noteNumber), 0, portamento);
-    envelope.gain.cancelScheduledValues(0);
-    envelope.gain.setTargetAtTime(1.0, 0, attack);
-}
+// function noteOn(noteNumber) {
 
-function noteOff(noteNumber) {
-    var position = activeNotes.indexOf(noteNumber);
-    if (position != -1) {
-        activeNotes.splice(position, 1);
-    }
-    if (activeNotes.length == 0) { // shut off the envelope
-        envelope.gain.cancelScheduledValues(0);
-        envelope.gain.setTargetAtTime(0.0, 0, release);
-    } else {
-        oscillator.frequency.cancelScheduledValues(0);
-        oscillator.frequency.setTargetAtTime(frequencyFromNoteNumber(activeNotes[activeNotes.length - 1]), 0, portamento);
-    }
-}
+// }
+
+// function noteOff(noteNumber) {
+
+// }
 
 function startLoggingMIDIInput(indexOfPort) {
     if (midi) {
@@ -108,11 +99,13 @@ function startLoggingMIDIInput(indexOfPort) {
             if (input.name == indexOfPort) {
                 input.onmidimessage = onMIDIMessage;
                 console.log("Connected to: " + input.name);
+                midiIn = input.name;
             } else {
                 input.onmidimessage = null;
                 console.log("No connection to: " + input.name);
             }
-        };
+        }
+        createMIDIUniforms();
     }
 }
 
