@@ -98,7 +98,7 @@ class WebSocketServer(WebSocketServerProtocol):
 if __name__ == '__main__':
 
     # port = '/dev/cu.usbmodema0111'
-    port = '/dev/cu.usbmodem1411'
+    port = '/dev/cu.usbmodem14111'
     baudrate = 115200
     SERVER_IP = '127.0.0.1'
     SERVER_WS_PORT = 8000

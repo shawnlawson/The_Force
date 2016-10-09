@@ -67,16 +67,24 @@ $( document ).ready(function()
 
     $("#selectMIDIIn")
         .selectmenu({})
+        .on("selectmenuopen", function(event, ui)
+        {
+            populateMIDIInSelect();
+        })
         .on("selectmenuchange", function(event)
         {
-
+            startLoggingMIDIInput($("#selectMIDIIn").val());
         });
 
     $("#selectMIDIOut")
         .selectmenu({})
+        .on("selectmenuopen", function(event, ui)
+        {
+            // populateMIDIInSelect();
+        })
         .on("selectmenuchange", function(event)
         {
-            
+           $("#selectMIDIOut").val(); 
         });
 
     $("#audioButton")
@@ -1046,7 +1054,7 @@ form.addEventListener('submit', function(e) {
 
 //document events
 $(document)
-    .tooltip()
+    // .tooltip()
     .mousemove(function( event )
     {
         mMousePosX = event.pageX;

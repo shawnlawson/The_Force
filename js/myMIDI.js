@@ -1,13 +1,38 @@
 var midi = null; // global MIDIAccess object
+var selectMIDI = null;
+var midiIn = null;
 
 function onMIDISuccess(midiAccess) {
     console.log("MIDI ready!");
     midi = midiAccess; // store in the global (in real usage, would probably keep in an object instance)
+    // midi.onstatechange = do something here like assign a function
     listInputsAndOutputs(midi);
 }
 
 function onMIDIFailure(msg) {
     console.log("Failed to get MIDI access - " + msg);
+}
+
+function populateMIDIInSelect() {
+
+    $('#selectMIDIIn').find('option').remove().end();
+    $('#selectMIDIIn').selectmenu('refresh');
+
+    for (var entry of midi.inputs) {
+        var input = entry[1];
+
+        if (midiIn && midiIn == input) {
+            $('#selectMIDIIn').append('<option val="' + input.id + '" selected="selected">' + input.name + '</option>');
+        } else {
+            $('#selectMIDIIn').append('<option val="' + input.id + '">' + input.name + '</option>');
+        }
+    }
+    $('#selectMIDIIn').selectmenu('refresh');
+}
+
+function midiConnectionStateChange(e) {
+    console.log("connection: " + e.port.name + " " + e.port.connection + " " + e.port.state);
+    populateMIDIInSelect();
 }
 
 function listInputsAndOutputs(midiAccess) {
@@ -31,7 +56,7 @@ function onMIDIMessage(event) {
     for (var i = 0; i < event.data.length; i++) {
         str += "0x" + event.data[i].toString(16) + " ";
     }
-    console.log(str);
+    // console.log(str);
 
     /*
      // Mask off the lower nibble (MIDI channel, which we don't care about)
@@ -48,32 +73,47 @@ function onMIDIMessage(event) {
           return;
       }
       */
+    if ($('#oscPanel').length) //onscreen
+    {
+        $("#MIDIMessages").html(str);
+    }
 }
 
- function noteOn(noteNumber) {
-      activeNotes.push( noteNumber );
-      oscillator.frequency.cancelScheduledValues(0);
-      oscillator.frequency.setTargetAtTime( frequencyFromNoteNumber(noteNumber), 0, portamento );
-      envelope.gain.cancelScheduledValues(0);
-      envelope.gain.setTargetAtTime(1.0, 0, attack);
-    }
+function noteOn(noteNumber) {
+    activeNotes.push(noteNumber);
+    oscillator.frequency.cancelScheduledValues(0);
+    oscillator.frequency.setTargetAtTime(frequencyFromNoteNumber(noteNumber), 0, portamento);
+    envelope.gain.cancelScheduledValues(0);
+    envelope.gain.setTargetAtTime(1.0, 0, attack);
+}
 
-    function noteOff(noteNumber) {
-      var position = activeNotes.indexOf(noteNumber);
-      if (position!=-1) {
-        activeNotes.splice(position,1);
-      }
-      if (activeNotes.length == 0) {  // shut off the envelope
+function noteOff(noteNumber) {
+    var position = activeNotes.indexOf(noteNumber);
+    if (position != -1) {
+        activeNotes.splice(position, 1);
+    }
+    if (activeNotes.length == 0) { // shut off the envelope
         envelope.gain.cancelScheduledValues(0);
-        envelope.gain.setTargetAtTime(0.0, 0, release );
-      } else {
+        envelope.gain.setTargetAtTime(0.0, 0, release);
+    } else {
         oscillator.frequency.cancelScheduledValues(0);
-        oscillator.frequency.setTargetAtTime( frequencyFromNoteNumber(activeNotes[activeNotes.length-1]), 0, portamento );
-      }
+        oscillator.frequency.setTargetAtTime(frequencyFromNoteNumber(activeNotes[activeNotes.length - 1]), 0, portamento);
     }
+}
 
-function startLoggingMIDIInput(midiAccess, indexOfPort) {
-    midiAccess.inputs.forEach(function(entry) { entry.onmidimessage = onMIDIMessage; });
+function startLoggingMIDIInput(indexOfPort) {
+    if (midi) {
+        for (var entry of midi.inputs) {
+            var input = entry[1];
+            if (input.name == indexOfPort) {
+                input.onmidimessage = onMIDIMessage;
+                console.log("Connected to: " + input.name);
+            } else {
+                input.onmidimessage = null;
+                console.log("No connection to: " + input.name);
+            }
+        };
+    }
 }
 
 function sendMiddleC(midiAccess, portID) {

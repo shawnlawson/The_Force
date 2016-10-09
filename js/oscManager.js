@@ -132,7 +132,7 @@ function sendOSCMessages()
             var message = new OSC.Message($("#outOSCAddr" + i).val(), mathValue, parseInt($("#outOSCLine" + i).val()));
             osc.send(message);
 
-            if ($('#oscTab').length)//onscreen
+            if ($('#oscPanel').length)//onscreen
             {
                 $("#rawOutMessages" + i).html(count.length);
             }
