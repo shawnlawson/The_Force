@@ -956,9 +956,8 @@ $( document ).ready(function()
     if (typeof(Storage) !== "undefined" && typeof(localStorage.lastValidCode) !== "undefined"){
         editor.setValue(localStorage.lastValidCode,-1);
     }else{
-        editor.setValue("void main () {\n\tgl_FragColor = vec4(black, 1.0);\n}", -1);
+        editor.setValue("#define NUM_RAYS 13.\n#define VOLUMETRIC_STEPS 19\n#define FAR 6.\nmat2 mm2(in float a){float c = cos(a), s = sin(a);return mat2(c,-s,s,c);}\nfloat hash( float n ){return fract(sin(n)*43758.5453);}\nmat3 m3 = mat3( 0.00,  0.80,  0.60,\n-0.80,  0.36, -0.48,\n-0.60, -0.48,  0.64 );\nfloat flow(in vec3 p, in float t){\nfloat z=2.;\nfloat rz = 0.;\nvec3 bp = p;\nfor (float i= 1.;i < 5.;i++ ){\np += time*.1;\nrz+= (sin(6.)*0.5+0.5) /z;\np = mix(bp,p,0.6);\nz *= 2.;\np *= 2.01;\np*= m3;\n}\nreturn rz;\n}\nfloat sins(in float x){\nfloat rz = 0.;\nfloat z = 2.;\nfor (float i= 0.;i < 3.;i++ )\n{\nrz += abs(fract(x*1.4)-0.5)/z;\nx *= 1.3;\nz *= 1.15;\nx -= time*.65*z;\n}\nreturn rz;\n}\nfloat segm( vec3 p, vec3 a, vec3 b){\nvec3 pa = p - a;\nvec3 ba = b - a;\nfloat h = clamp( dot(pa,ba)/dot(ba,ba), 0.0, 1. );\nreturn length( pa - ba*h )*.5;\n}\nvec3 path(in float i, in float d){\nvec3 en = vec3(0.,0.,1.);\nfloat sns2 = sins(d+i*0.5)*0.22;\nfloat sns = sins(d+i*.6)*0.21;\nen.xz *= mm2((hash(i*10.569)-.5)*6.2+sns2);\nen.xy *= mm2((hash(i*4.732)-.5)*6.2+sns);\nreturn en;\n}\nvec2 map(vec3 p, float i)\n{\nfloat lp = length(p);\nvec3 bg = vec3(0.);\nvec3 en = path(i,lp);\nfloat ins = smoothstep(0.11,.46,lp);\nfloat outs = .15+smoothstep(.0,.15,abs(lp-1.));\np *= ins*outs;\nfloat id = ins*outs;\nfloat rz = segm(p, bg, en)-0.011;\nreturn vec2(rz,id);\n}\nfloat march(in vec3 ro, in vec3 rd, in float startf, in float maxd, in float j)\n{\nfloat precis = 0.001;\nfloat h=0.5;\nfloat d = startf;\nfor( int i=0; i<32; i++ )\n{\nif( abs(h)<precis||d>maxd ) break;\nd += h*1.2;\nfloat res = map(ro+rd*d, j).x;\nh = res;\n}\nreturn d;\n}\nvec3 vmarch(in vec3 ro, in vec3 rd, in float j, in vec3 orig)\n{\nvec3 p = ro;\nvec2 r = vec2(0.);\nvec3 sum = vec3(0);\nfloat w = 0.;\nfor( int i=0; i<VOLUMETRIC_STEPS; i++ )\n{\nr = map(p,j);\np += rd*.03;\nfloat lp = length(p);\nvec3 col = sin(vec3(1.05,2.5,1.52)*3.94+r.y)*.85+0.4;\ncol.rgb *= smoothstep(.0,.015,-r.x);\ncol *= smoothstep(0.04,.2,abs(lp-1.1));\ncol *= smoothstep(0.1,.34,lp);\nsum += abs(col)*5. * 1.2 / (log(distance(p,orig)-2.)+.75);\n}\nreturn sum;\n}\nvec2 iSphere2(in vec3 ro, in vec3 rd){\nvec3 oc = ro;\nfloat b = dot(oc, rd);\nfloat c = dot(oc,oc) - 1.;\nfloat h = b*b - c;\nif(h <0.0) return vec2(-1.);\nreturn vec2((-b - sqrt(h)), (-b + sqrt(h)));\n}\nvoid main()\n{\nvec2 uv = gl_FragCoord.xy/resolution.xy-0.5;\nuv.x *= float(resolution.x )/ float(resolution.y);\nvec2 um = resolution.xy-.5;\nvec3 ro = vec3(0.,0.,5.);\nvec3 rd = normalize(vec3(uv*.7,-1.5));\nmat2 mx = mm2(time*.4+um.x*6.);\nmat2 my = mm2(time*0.3+um.y*6.);\nro.xz *= mx;rd.xz *= mx;\nro.xy *= my;rd.xy *= my;\nvec3 bro = ro;\nvec3 brd = rd;\nvec3 col = vec3(0.0125,0.,0.025);\n#if 1\nfor (float j = 1.;j<NUM_RAYS+1.;j++)\n{\nro = bro;\nrd = brd;\nmat2 mm = mm2((time*0.1+((j+1.)*5.1))*j*0.25);\nro.xy *= mm;rd.xy *= mm;\nro.xz *= mm;rd.xz *= mm;\nfloat rz = march(ro,rd,2.5,FAR,j);\nif ( rz >= FAR)continue;\nvec3 pos = ro+rz*rd;\ncol = max(col,vmarch(pos,rd,j, bro));\n}\n#endif\nro = bro;\nrd = brd;\nvec2 sph = iSphere2(ro,rd);\nif (sph.x > 0.)\n{\nvec3 pos = ro+rd*sph.x;\nvec3 pos2 = ro+rd*sph.y;\nvec3 rf = reflect( rd, pos );\nvec3 rf2 = reflect( rd, pos2 );\nfloat nz = (-log(abs(flow(rf*1.2,time)-.01)));\nfloat nz2 = (-log(abs(flow(rf2*1.2,-time)-.01)));\ncol += (0.1*nz*nz* vec3(0.12,0.12,.5) + 0.05*nz2*nz2*vec3(0.55,0.2,.55))*0.8;\n}\ngl_FragColor = vec4(col*1.3, 1.0);\n}", -1);
     }
-   
     // mCodeMirror.on("drop", function( mCodeMirror, event )
     //             {
     //                 event.stopPropagation();
@@ -1017,6 +1016,10 @@ $( document ).ready(function()
                 uiUpdater.displayMessage("Error", loader.errorMessage);
             });
     };
+    initAudio();
+    audioSource = new SoundCloudAudioSource(player);
+    loadAndUpdate("https://soundcloud.com/batchass/sets/batchass");
+
 
 form.addEventListener('submit', function(e) {
     initAudio();
