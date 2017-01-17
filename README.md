@@ -5,12 +5,12 @@ Life creates it, makes it grow. Its energy surrounds us and binds us. Luminous b
 Force felt by [Obi-Wan Codenobi](http://shawnlawson.com) for use in live-coding performances with [The Wookie](http://ryanrosssmith.com). Together they travel as [_The Rebel Scum_](http://codenobiandwookie.com).
 
 ## API
-
-In addition to the standard OpenGL Fragment Shader language, the following are added to the on screen code. See top of openGL.js for actual code.
+If you're looking or which functions are built-in, then give the wiki [API](./wiki/API) a look.
 
 ### Additionally helpful to know
 
-- [The_Force/shaderExperiments](./help) contains several examples to get you started
+- [The_Force/shaderExperiments](./shaderExperiments) contains several examples to get you started
+- [Workshop Notes](https://github.com/shawnlawson/The_Force_Workshop) contains some hand-written information and a few more example shaders
 - [The_Force/help](./help) contains helpful documents, including **instructions to run local/offline (it's easy!)**
 - line in and microphone only work in Google Chrome, and requires HTTPS
 - <kbd>ctrl</kbd>+<kbd>shift</kbd> will toggle text visibility
@@ -24,8 +24,6 @@ In addition to the standard OpenGL Fragment Shader language, the following are a
 ## To Do 
 
 - fix popup menu styling
-- sound cloud and/or pandora and/or other sound stream input
-- more color names
 - fill in more help window
 - DnD into text editor window
 - more 2D textures
