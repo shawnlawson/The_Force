@@ -163,14 +163,8 @@ function setShaderFromEditor() {
     return setShader(result, false);
 }
 
-<<<<<<< HEAD
-function newShader(vs, shaderCode)
-{
-	var res = createShader(vs, mHeader + mInputsStr + mOSCStr + shaderCode);//, true);
-=======
 function newShader(vs, shaderCode) {
     var res = createShader(vs, mHeader + mInputsStr + mOSCStr + mMIDIStr + shaderCode); //, true);
->>>>>>> MIDI
 
     if (res.mSuccess === false) {
         return res;
