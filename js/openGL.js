@@ -319,18 +319,10 @@ function createOSCUniforms() {
     for (var i = 0; i < oscM.length; i++) {
         var inp = oscM[i];
 
-<<<<<<< HEAD
-        if (inp !== null)
-        {
-            // mOSCStr += "uniform vec4 " + $('#inOSCUniform'+i).val() + ";\n";
-            // mOSCStr += "uniform vec4 " + oscM[i].uniName + ";\n";
-            mOSCStr = "uniform vec4 analogInput;"
-=======
         if (inp !== null) {
             // mOSCStr += "uniform vec4 " + $('#inOSCUniform'+i).val() + ";\n";
             // mOSCStr += "uniform vec4 " + oscM[i].uniName + ";\n";
             mOSCStr = "uniform vec4 analogInput;";
->>>>>>> MIDI
         }
     }
 }
