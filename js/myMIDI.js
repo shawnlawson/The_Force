@@ -76,6 +76,10 @@ function onMIDIMessage(event) {
             // noteOff(event.data[1]);
             midiData[event.data[1]] = 0;
             break;
+
+        case 0xb0:
+            midiData[event.data[1]] = event.data[2];
+            break;
     }
 
     if ($('#oscPanel').length) //onscreen
