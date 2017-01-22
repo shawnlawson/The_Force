@@ -21,6 +21,7 @@
     <script src="https://connect.soundcloud.com/sdk.js"></script>
     <script type="text/javascript" src="js/openGL.js"></script>
     <script type="text/javascript" src="js/oscManager.js"></script>
+    <script type="text/javascript" src="js/myMIDI.js"></script>
     <script type="text/javascript" src="js/pageGlobals.js"></script>
 </head>
 
@@ -209,35 +210,60 @@
     </div>
     <!-- osc =================================================================================== -->
     <div id="oscPanel" title="OSC Websocket">
-        <p>OSC Websocket</p>
-        <input type="text" id="socket_address" value="localhost" class="hide" />
-        <input type="text" id="socket_port" value="8000" class="hide" />
-        <input type="submit" id="socket_start" value="Start" />
-        <input type="submit" id="socket_stop" value="Stop" />
-        <span id="socket_status">offline</span>
-        <p>Listenting to - localhost:8000</p>
-        <div id="myInputs">
-            <input type="submit" id="appendOSCInput" value="Add Input" />
-            <br />
-            <br />
-        </div>
-        <p>Sending to - localhost:7600</p>
-        <p>Direct Message</p>
-        <div>
-        <form id="myConsole">
-        <input type="text" id="consoleMessage" value="/out"/>
-        <input type="text" id="consoleValue" value=".9"/>
-        <input type="text" id="consoleLine" value="0"/>
-        </form>
-        </div>
-        <p>Auto Messages</p>
-        <div id="myOutputs">
-            <input type="submit" id="appendOSCOutput" value="Add Output" />
-            <br />
-            <br />
+        <div id="networkTabs" class="myTabs">
+            <ul>
+                <li><a href="#networkTabs-1">OSC</a></li>
+                <li><a href="#networkTabs-2">MIDI</a></li>
+            </ul>
+            <div id="networkTabs-1">
+                <p>OSC Websocket</p>
+                <input type="text" id="socket_address" value="localhost" class="hide" />
+                <input type="text" id="socket_port" value="8000" class="hide" />
+                <input type="submit" id="socket_start" value="Start" />
+                <input type="submit" id="socket_stop" value="Stop" />
+                <span id="socket_status">offline</span>
+                <p>Listenting to - localhost:8000</p>
+                <div id="myInputs">
+                    <input type="submit" id="appendOSCInput" value="Add Input" />
+                    <br />
+                    <br />
+                </div>
+                <p>Sending to - localhost:7600</p>
+                <p>Direct Message</p>
+                <div>
+                <form id="myConsole">
+                <input type="text" id="consoleMessage" value="/out"/>
+                <input type="text" id="consoleValue" value=".9"/>
+                <input type="text" id="consoleLine" value="0"/>
+                </form>
+                </div>
+                <p>Auto Messages</p>
+                <div id="myOutputs">
+                    <input type="submit" id="appendOSCOutput" value="Add Output" />
+                    <br />
+                    <br />
+                </div>
+            </div>
+            <div id="networkTabs-2">
+                <div id="selectMIDIInDIV" class="uiButton" title="MIDI Input">
+                    <select id="selectMIDIIn">
+                    <option>null</option>
+                    </select>
+                </div>
+                <div id="selectMIDIOutDIV" class="uiButton" title="MIDI Output">
+                    <select id="selectMIDIOut">
+                    <option>null</option>
+                    </select>
+                </div>
+                <br />
+                <br />
+                <p>MIDI Messages</p>
+                <div id="MIDIMessages">
+                </div>
+            </div>
         </div>
     </div>
-    <!-- osc =================================================================================== -->
+    <!-- Color Correction Panel =================================================================================== -->
     <div id="colorCorrectPanel" title="Color Correction">
         <p>
             <label for="gammaAmount">Gamma:</label>

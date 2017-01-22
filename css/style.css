@@ -49,6 +49,9 @@ body, html {
 .ui-selectmenu-menu {
     background:rgba(0,0,0,0.4);
 }
+.ui-selectmenu-open {
+    z-index:2000 !important;
+}
 .tabTable {
     height: 150px;
     overflow: auto;
@@ -191,6 +194,10 @@ body, html {
 } 
 #selectFontSizeDIV,  #selectFontSize{
     width: 60px;
+}
+
+#selectMIDIInDIV, #selectMIDIOutDIV, #selectMIDIIn, #selectMIDIOut{
+    width: 180px;
 }
 
 #audioButton {

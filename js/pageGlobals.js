@@ -65,6 +65,28 @@ $( document ).ready(function()
             document.getElementById('editor').style.fontSize = $("#selectFontSize").val()+'px';
         });
 
+    $("#selectMIDIIn")
+        .selectmenu({})
+        .on("selectmenuopen", function(event, ui)
+        {
+            populateMIDIInSelect();
+        })
+        .on("selectmenuchange", function(event)
+        {
+            startLoggingMIDIInput($("#selectMIDIIn").val());
+        });
+
+    $("#selectMIDIOut")
+        .selectmenu({})
+        .on("selectmenuopen", function(event, ui)
+        {
+            // populateMIDIInSelect();
+        })
+        .on("selectmenuchange", function(event)
+        {
+           $("#selectMIDIOut").val(); 
+        });
+
     $("#audioButton")
         .button()
         .click( function() 
@@ -855,9 +877,9 @@ $( document ).ready(function()
     
     function fixSliderValue(input)
     {
-        if( input < .2 )
+        if (input < .2)
             return .2;
-        if( input > 2.2)
+        if (input > 2.2)
             return 2.2;
         
         return input;
@@ -882,8 +904,10 @@ $( document ).ready(function()
 
     $("#helpTabs")
         .tabs();
+    $("#networkTabs")
+        .tabs();
 
-    var highlight = ace.require("ace/ext/static_highlight")
+    var highlight = ace.require("ace/ext/static_highlight");
 
     function qsa(sel) {
         return Array.apply(null, document.querySelectorAll(sel));
@@ -1030,7 +1054,7 @@ form.addEventListener('submit', function(e) {
 
 //document events
 $(document)
-    .tooltip()
+    // .tooltip()
     .mousemove(function( event )
     {
         mMousePosX = event.pageX;

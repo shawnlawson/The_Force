@@ -6,12 +6,13 @@ var mProgram = null;
 var screenProgram = null;
 var mInputs = [null, null, null, null];
 var mInputsStr = "";
-var mOSCStr= "";
+var mOSCStr = "";
+var mMIDIStr = "";
 var vsScreen = null;
 var vsDraw = null;
 var elapsedBandPeaks = [0.0, 0.0, 0.0, 0.0];
 //unifoms
-var vertPosU, l2, l3, l4, l5, l6, l7, l8, ch0, ch1, ch2, ch3, ch4, bs, screenResU, screenTexU, screenBlendU, translateUniform, scaleUniform, rotateUniform, gammaU, bandsTimeU;
+var vertPosU, l2, l3, l4, l5, l6, l7, l8, ch0, ch1, ch2, ch3, ch4, bs, screenResU, screenTexU, screenBlendU, translateUniform, scaleUniform, rotateUniform, gammaU, bandsTimeU, midiU;
 var resos = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
 var oscM = [null, null, null, null, null, null, null, null, null, null];
 var gammaValues = [1.0, 1.0, 1.0, 1.0];
@@ -22,8 +23,7 @@ var fsNew = "void main () {\n\tgl_FragColor = vec4(black, 1.0);\n}";
 var testingImage = false;
 var testTexture;
 
-function createGlContext() 
-{
+function createGlContext() {
     var gGLContext = null;
     var names = ["webgl", "experimental-webgl", "webkit-3d", "moz-webgl"];
     for (var i = 0; i < names.length; i++) {
@@ -49,20 +49,19 @@ function createGlContext()
     }
 
     gl = gGLContext;
-   	resizeGLCanvas(window.innerWidth, window.innerHeight);
+    resizeGLCanvas(window.innerWidth, window.innerHeight);
 
     //because I want to load shaders as files. :/
-    $.when( $.ajax({url:"shaders/draw.vert", dataType: "text"}),
-            $.ajax({url:"shaders/screen.vert", dataType: "text"}), 
-            $.ajax({url:"shaders/screen.frag", dataType: "text"}),
-            $.ajax({url:"shaders/header.frag", dataType: "text"})).done( function(d, v, f, h){
-   
+    $.when($.ajax({ url: "shaders/draw.vert", dataType: "text" }),
+        $.ajax({ url: "shaders/screen.vert", dataType: "text" }),
+        $.ajax({ url: "shaders/screen.frag", dataType: "text" }),
+        $.ajax({ url: "shaders/header.frag", dataType: "text" })).done(function(d, v, f, h) {
+
         //build screen shader
         var res = createShader(v[0], f[0]);
-        
-        if (res.mSuccess === false) 
-        {
-            console.log(res.mInfo); 
+
+        if (res.mSuccess === false) {
+            console.log(res.mInfo);
             alert("error");
         }
 
@@ -82,26 +81,27 @@ function createGlContext()
         rotateUniform = gl.getUniformLocation(screenProgram, "u_degrees");
         gammaU = gl.getUniformLocation(screenProgram, "colorCurves");
         //vertex data
-        mQuadVBO =  gl.createBuffer();
-        gl.bindBuffer( gl.ARRAY_BUFFER, mQuadVBO);
-        gl.bufferData( gl.ARRAY_BUFFER, 
-                       new Float32Array([   -1.0, -1.0, 
-                                             1.0, -1.0, 
-                                            -1.0,  1.0,  
-                                             1.0,  1.0]), 
-                        gl.STATIC_DRAW);
+        mQuadVBO = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, mQuadVBO);
+        gl.bufferData(gl.ARRAY_BUFFER,
+            new Float32Array([-1.0, -1.0,
+                1.0, -1.0, -1.0, 1.0,
+                1.0, 1.0
+            ]),
+            gl.STATIC_DRAW);
         gl.enableVertexAttribArray(vertPosU);
-        gl.vertexAttribPointer(vertPosU, 2,  gl.FLOAT, false, 0, 0);
+        gl.vertexAttribPointer(vertPosU, 2, gl.FLOAT, false, 0, 0);
 
-        mQuadTVBO = gl.createBuffer();    
-        gl.bindBuffer( gl.ARRAY_BUFFER, mQuadTVBO);
+        mQuadTVBO = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, mQuadTVBO);
         gl.bufferData(
-            gl.ARRAY_BUFFER, 
+            gl.ARRAY_BUFFER,
             new Float32Array([
-                0.0, 0.0, 
-                1.0, 0.0, 
-                0.0,  1.0,  
-                1.0,  1.0]), 
+                0.0, 0.0,
+                1.0, 0.0,
+                0.0, 1.0,
+                1.0, 1.0
+            ]),
             gl.STATIC_DRAW);
         gl.enableVertexAttribArray(texLocationAttribute);
         gl.vertexAttribPointer(texLocationAttribute, 2, gl.FLOAT, false, 0, 0);
@@ -111,9 +111,8 @@ function createGlContext()
         mHeader = h[0];
         vsDraw = d[0];
         var res = newShader(vsDraw, fsNew);
-        if (res.mSuccess === false) 
-        {
-            console.log(res.mInfo); 
+        if (res.mSuccess === false) {
+            console.log(res.mInfo);
             alert("error");
         }
     }); //end $.when
@@ -125,139 +124,143 @@ function createGlContext()
 }
 
 
-function createTarget(width, height) 
-{
+function createTarget(width, height) {
     var target = {};
 
 
-    if (target.framebuffer &&  gl.isFramebuffer(target.framebuffer))
-         gl.deleteFramebuffer(target.framebuffer);
+    if (target.framebuffer && gl.isFramebuffer(target.framebuffer))
+        gl.deleteFramebuffer(target.framebuffer);
 
-    if (target.texture &&  gl.isTexture(target.texture))
-         gl.deleteTexture(target.texture);
+    if (target.texture && gl.isTexture(target.texture))
+        gl.deleteTexture(target.texture);
 
-    target.framebuffer =  gl.createFramebuffer();
-    target.texture =  gl.createTexture();
+    target.framebuffer = gl.createFramebuffer();
+    target.texture = gl.createTexture();
 
     // set up framebuffer
-     gl.bindTexture( gl.TEXTURE_2D, target.texture);
-     gl.texImage2D( gl.TEXTURE_2D, 0,  gl.RGBA, width, height, 0,  gl.RGBA,  gl.UNSIGNED_BYTE, null);
+    gl.bindTexture(gl.TEXTURE_2D, target.texture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
 
-     gl.texParameteri( gl.TEXTURE_2D,  gl.TEXTURE_WRAP_S,  gl.CLAMP_TO_EDGE);
-     gl.texParameteri( gl.TEXTURE_2D,  gl.TEXTURE_WRAP_T,  gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
-     gl.texParameteri( gl.TEXTURE_2D,  gl.TEXTURE_MAG_FILTER,  gl.NEAREST);
-     gl.texParameteri( gl.TEXTURE_2D,  gl.TEXTURE_MIN_FILTER,  gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
 
-     gl.bindFramebuffer( gl.FRAMEBUFFER, target.framebuffer);
-     gl.framebufferTexture2D( gl.FRAMEBUFFER,  gl.COLOR_ATTACHMENT0,  gl.TEXTURE_2D, target.texture, 0);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, target.framebuffer);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, target.texture, 0);
 
     // clean up
-     gl.bindTexture( gl.TEXTURE_2D, null);
-     gl.bindFramebuffer( gl.FRAMEBUFFER, null);
+    gl.bindTexture(gl.TEXTURE_2D, null);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
     return target;
 }
 
-function setShaderFromEditor()
-{
-	var result = newShader(vsDraw, editor.getValue());
+function setShaderFromEditor() {
+    var result = newShader(vsDraw, editor.getValue());
     sendOSCMessages();
-	return setShader(result, false);
+    return setShader(result, false);
 }
 
+<<<<<<< HEAD
 function newShader(vs, shaderCode)
 {
 	var res = createShader(vs, mHeader + mInputsStr + mOSCStr + shaderCode);//, true);
+=======
+function newShader(vs, shaderCode) {
+    var res = createShader(vs, mHeader + mInputsStr + mOSCStr + mMIDIStr + shaderCode); //, true);
+>>>>>>> MIDI
 
-	if (res.mSuccess === false) 
-    {
+    if (res.mSuccess === false) {
         return res;
     }
 
-    if (typeof(Storage) !== "undefined"){
-        localStorage.lastValidCode= shaderCode;
+    if (typeof(Storage) !== "undefined") {
+        localStorage.lastValidCode = shaderCode;
     }
-    
 
-	if (mProgram !== null)
-		 gl.deleteProgram(mProgram);
 
-	mProgram = res.mProgram;
+    if (mProgram !== null)
+        gl.deleteProgram(mProgram);
 
-	// vertPosU =  gl.getUniformLocation(mProgram, "position");
-	l2 =  gl.getUniformLocation(mProgram, "time");
-	l3 =  gl.getUniformLocation(mProgram, "resolution");
-    l4 =  gl.getUniformLocation(mProgram, "mouse");
-    l5 =  gl.getUniformLocation(mProgram, "channelTime");
-    l7 =  gl.getUniformLocation(mProgram, "date");
-    l8 =  gl.getUniformLocation(mProgram, "channelResolution");
+    mProgram = res.mProgram;
 
-  	ch0 =  gl.getUniformLocation(mProgram, "channel0");
-    ch1 =  gl.getUniformLocation(mProgram, "channel1");
-    ch2 =  gl.getUniformLocation(mProgram, "channel2");
-    ch3 =  gl.getUniformLocation(mProgram, "channel3");
-    ch4 =  gl.getUniformLocation(mProgram, "backbuffer");
-    
-    bs =  gl.getUniformLocation(mProgram, "bands");
+    // vertPosU =  gl.getUniformLocation(mProgram, "position");
+    l2 = gl.getUniformLocation(mProgram, "time");
+    l3 = gl.getUniformLocation(mProgram, "resolution");
+    l4 = gl.getUniformLocation(mProgram, "mouse");
+    l5 = gl.getUniformLocation(mProgram, "channelTime");
+    l7 = gl.getUniformLocation(mProgram, "date");
+    l8 = gl.getUniformLocation(mProgram, "channelResolution");
+
+    ch0 = gl.getUniformLocation(mProgram, "channel0");
+    ch1 = gl.getUniformLocation(mProgram, "channel1");
+    ch2 = gl.getUniformLocation(mProgram, "channel2");
+    ch3 = gl.getUniformLocation(mProgram, "channel3");
+    ch4 = gl.getUniformLocation(mProgram, "backbuffer");
+
+    bs = gl.getUniformLocation(mProgram, "bands");
     bandsTimeU = gl.getUniformLocation(mProgram, "bandsTime");
 
     //OSC uniforms
-    for (var i = 0; i < oscM.length; i++)
-    {
-        if (oscM[i] !== null)
-        {
-            oscM[i].uniLoc =  gl.getUniformLocation(mProgram, oscM[i].uniName);
+    for (var i = 0; i < oscM.length; i++) {
+        if (oscM[i] !== null) {
+            oscM[i].uniLoc = gl.getUniformLocation(mProgram, oscM[i].uniName);
         }
     }
 
-	return res; //means success
+    //MIDI uniform
+    if (midi !== null) {
+        midiU = gl.getUniformLocation(mProgram, "midi");
+    }
+
+    return res; //means success
 }
 
-function createShader(vertShader, fragShader)
-{
-	if ( gl === null) return;
+function createShader(vertShader, fragShader) {
+    if (gl === null) return;
 
-	var tmpProgram =  gl.createProgram();
+    var tmpProgram = gl.createProgram();
 
-    var vs =  gl.createShader( gl.VERTEX_SHADER);
-    var fs =  gl.createShader( gl.FRAGMENT_SHADER);
+    var vs = gl.createShader(gl.VERTEX_SHADER);
+    var fs = gl.createShader(gl.FRAGMENT_SHADER);
 
-     gl.shaderSource(vs, vertShader);
-     gl.shaderSource(fs, fragShader);
+    gl.shaderSource(vs, vertShader);
+    gl.shaderSource(fs, fragShader);
 
-     gl.compileShader(vs);
-     gl.compileShader(fs);
+    gl.compileShader(vs);
+    gl.compileShader(fs);
 
-    if (! gl.getShaderParameter(vs,  gl.COMPILE_STATUS)) {
-        var infoLog =  gl.getShaderInfoLog(vs);
-         gl.deleteProgram(tmpProgram);
+    if (!gl.getShaderParameter(vs, gl.COMPILE_STATUS)) {
+        var infoLog = gl.getShaderInfoLog(vs);
+        gl.deleteProgram(tmpProgram);
         return {
             mSuccess: false,
             mInfo: infoLog
         };
     }
 
-    if (! gl.getShaderParameter(fs,  gl.COMPILE_STATUS)) {
-        var infoLog =  gl.getShaderInfoLog(fs);
-         gl.deleteProgram(tmpProgram);
+    if (!gl.getShaderParameter(fs, gl.COMPILE_STATUS)) {
+        var infoLog = gl.getShaderInfoLog(fs);
+        gl.deleteProgram(tmpProgram);
         return {
             mSuccess: false,
             mInfo: infoLog
         };
     }
 
-     gl.attachShader(tmpProgram, vs);
-     gl.attachShader(tmpProgram, fs);
+    gl.attachShader(tmpProgram, vs);
+    gl.attachShader(tmpProgram, fs);
 
-     gl.deleteShader(vs);
-     gl.deleteShader(fs);
+    gl.deleteShader(vs);
+    gl.deleteShader(fs);
 
-     gl.linkProgram(tmpProgram);
+    gl.linkProgram(tmpProgram);
 
-    if (! gl.getProgramParameter(tmpProgram,  gl.LINK_STATUS)) {
-        var infoLog =  gl.getProgramInfoLog(tmpProgram);
-         gl.deleteProgram(tmpProgram);
+    if (!gl.getProgramParameter(tmpProgram, gl.LINK_STATUS)) {
+        var infoLog = gl.getProgramInfoLog(tmpProgram);
+        gl.deleteProgram(tmpProgram);
         return {
             mSuccess: false,
             mInfo: infoLog
@@ -270,54 +273,38 @@ function createShader(vertShader, fragShader)
     }
 }
 
-function destroyInput(id) 
-{
+function destroyInput(id) {
     if (mInputs[id] === null) return;
-    if ( gl === null) return;
+    if (gl === null) return;
 
     var inp = mInputs[id];
-    
-    if (inp.type == "texture") 
-    {
-         gl.deleteTexture(inp.globject);
-    } 
-    else if (inp.type == "slideshow") 
-    {
-         gl.deleteTexture(inp.globject);
-    } 
-    else if (inp.type == "webcam") 
-    {
-         gl.deleteTexture(inp.globject);
-    } 
-    else if (inp.type == "video") 
-    {
+
+    if (inp.type == "texture") {
+        gl.deleteTexture(inp.globject);
+    } else if (inp.type == "slideshow") {
+        gl.deleteTexture(inp.globject);
+    } else if (inp.type == "webcam") {
+        gl.deleteTexture(inp.globject);
+    } else if (inp.type == "video") {
         inp.video.pause();
         inp.video = null;
-         gl.deleteTexture(inp.globject);
-    } 
-    else if (inp.type == "music") 
-    {
+        gl.deleteTexture(inp.globject);
+    } else if (inp.type == "music") {
         inp.audio.pause();
         inp.audio = null;
-         gl.deleteTexture(inp.globject);
-    } 
-    else if (inp.type == "cubemap") 
-    {
-         gl.deleteTexture(inp.globject);
-    } 
-    else if (inp.type == "tex_keyboard") 
-    {
-         gl.deleteTexture(inp.globject);
+        gl.deleteTexture(inp.globject);
+    } else if (inp.type == "cubemap") {
+        gl.deleteTexture(inp.globject);
+    } else if (inp.type == "tex_keyboard") {
+        gl.deleteTexture(inp.globject);
     }
 
     mInputs[id] = null;
 }
 
-function createInputStr()
-{
-	mInputsStr = "";
-	for (var i = 0; i < mInputs.length; i++) 
-	{
+function createInputStr() {
+    mInputsStr = "";
+    for (var i = 0; i < mInputs.length; i++) {
         var inp = mInputs[i];
 
         if (inp !== null && inp.type == "cubemap")
@@ -327,31 +314,43 @@ function createInputStr()
     }
 }
 
-function createOSCUniforms()
-{
+function createOSCUniforms() {
     mOSCStr = "";
-    for (var i = 0; i < oscM.length; i++)
-    {
+    for (var i = 0; i < oscM.length; i++) {
         var inp = oscM[i];
 
+<<<<<<< HEAD
         if (inp !== null)
         {
             // mOSCStr += "uniform vec4 " + $('#inOSCUniform'+i).val() + ";\n";
             // mOSCStr += "uniform vec4 " + oscM[i].uniName + ";\n";
             mOSCStr = "uniform vec4 analogInput;"
+=======
+        if (inp !== null) {
+            // mOSCStr += "uniform vec4 " + $('#inOSCUniform'+i).val() + ";\n";
+            // mOSCStr += "uniform vec4 " + oscM[i].uniName + ";\n";
+            mOSCStr = "uniform vec4 analogInput;";
+>>>>>>> MIDI
         }
     }
 }
 
-function getHeaderSize()
-{
-    var n = (mHeader + mInputsStr + mOSCStr).split(/\r\n|\r|\n/).length;
+function createMIDIUniforms() {
+    mMIDIStr = "";
+    if (midiIn !== null) {
+        mMIDIStr = "uniform int midi[128];";
+    }
+
+}
+
+function getHeaderSize() {
+    var n = (mHeader + mInputsStr + mOSCStr + mMIDIStr).split(/\r\n|\r|\n/).length;
     return n;
 }
 
 function handleTextureLoaded(image, texture) {
     gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true); 
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -359,8 +358,7 @@ function handleTextureLoaded(image, texture) {
     gl.bindTexture(gl.TEXTURE_2D, null);
 }
 
-function createGLTexture(ctx, image, format, texture) 
-{
+function createGLTexture(ctx, image, format, texture) {
     if (ctx === null) return;
 
     ctx.bindTexture(ctx.TEXTURE_2D, texture);
@@ -374,8 +372,7 @@ function createGLTexture(ctx, image, format, texture)
     ctx.bindTexture(ctx.TEXTURE_2D, null);
 }
 
-function createGLTextureLinear(ctx, image, texture) 
-{
+function createGLTextureLinear(ctx, image, texture) {
     if (ctx === null) return;
 
     ctx.bindTexture(ctx.TEXTURE_2D, texture);
@@ -389,8 +386,7 @@ function createGLTextureLinear(ctx, image, texture)
 }
 
 
-function createGLTextureNearestRepeat(ctx, image, texture) 
-{
+function createGLTextureNearestRepeat(ctx, image, texture) {
     if (ctx === null) return;
 
     ctx.bindTexture(ctx.TEXTURE_2D, texture);
@@ -401,8 +397,7 @@ function createGLTextureNearestRepeat(ctx, image, texture)
     ctx.bindTexture(ctx.TEXTURE_2D, null);
 }
 
-function createGLTextureNearest(ctx, image, texture) 
-{
+function createGLTextureNearest(ctx, image, texture) {
     if (ctx === null) return;
 
     ctx.bindTexture(ctx.TEXTURE_2D, texture);
@@ -415,8 +410,7 @@ function createGLTextureNearest(ctx, image, texture)
     ctx.bindTexture(ctx.TEXTURE_2D, null);
 }
 
-function createAudioTexture(ctx, texture) 
-{
+function createAudioTexture(ctx, texture) {
     if (ctx === null) return;
 
     ctx.bindTexture(ctx.TEXTURE_2D, texture);
@@ -428,8 +422,7 @@ function createAudioTexture(ctx, texture)
     ctx.bindTexture(ctx.TEXTURE_2D, null);
 }
 
-function createKeyboardTexture(ctx, texture) 
-{
+function createKeyboardTexture(ctx, texture) {
     if (ctx === null) return;
 
     ctx.bindTexture(ctx.TEXTURE_2D, texture);
@@ -441,39 +434,32 @@ function createKeyboardTexture(ctx, texture)
     ctx.bindTexture(ctx.TEXTURE_2D, null);
 }
 
-function resizeGLCanvas(width, height)
-{
-	mCanvas.width = width / quality;
-	mCanvas.height = height / quality;
+function resizeGLCanvas(width, height) {
+    mCanvas.width = width / quality;
+    mCanvas.height = height / quality;
 
-	mCanvas.style.width = width + 'px';
-	mCanvas.style.height = height + 'px';
+    mCanvas.style.width = width + 'px';
+    mCanvas.style.height = height + 'px';
 
     gl.viewport(0, 0, mCanvas.width, mCanvas.height);
 
-	fbos[0] = createTarget(mCanvas.width, mCanvas.height);
-	fbos[1] = createTarget(mCanvas.width, mCanvas.height);
+    fbos[0] = createTarget(mCanvas.width, mCanvas.height);
+    fbos[1] = createTarget(mCanvas.width, mCanvas.height);
 }
 
-function updateKeyboardDown(event)
-{
-    for (var i = 0; i < mInputs.length; i++)
-    {
+function updateKeyboardDown(event) {
+    for (var i = 0; i < mInputs.length; i++) {
         var inp = mInputs[i];
-        if (inp !== null && inp.type == "tex_keyboard")
-        {
+        if (inp !== null && inp.type == "tex_keyboard") {
             inp.mData[event] = 255;
         }
     }
 }
 
-function updateKeyboardUp(event)
-{
-    for (var i = 0; i < mInputs.length; i++)
-    {
+function updateKeyboardUp(event) {
+    for (var i = 0; i < mInputs.length; i++) {
         var inp = mInputs[i];
-        if (inp !== null && inp.type == "tex_keyboard")
-        {
+        if (inp !== null && inp.type == "tex_keyboard") {
             inp.mData[event] = 0;
         }
     }
@@ -481,11 +467,9 @@ function updateKeyboardUp(event)
 
 var d = null, dates = null;
 
-
-function paint()
-{
-	if ( gl === null ) return;
-	if ( mProgram === null ) return;
+function paint() {
+    if (gl === null) return;
+    if (mProgram === null) return;
 
     gl.useProgram(mProgram);
 
@@ -496,199 +480,189 @@ function paint()
         d.getDate(), // the day of the month (from 1-31)
         d.getHours() * 60.0 * 60 + d.getMinutes() * 60 + d.getSeconds()
     ];
- 
-	//init dimensions
+
+    //init dimensions
     resos = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
 
-	//add uniform stuff
-	if (l2 !== null)  gl.uniform1f(l2, (Date.now()-mTime) * 0.001);
-    if (l3 !== null)  gl.uniform2f(l3, mCanvas.width, mCanvas.height);
-    if (l4 !== null)  gl.uniform4f(l4, mMousePosX, mMousePosY, mMouseClickX,mMouseClickY);
-    if (l7 !== null)  gl.uniform4f(l7, d.getFullYear(), d.getMonth(), d.getDate(),
-    					 d.getHours() * 60 * 60 + d.getMinutes() * 60 + d.getSeconds());
+    //add uniform stuff
+    if (l2 !== null) gl.uniform1f(l2, (Date.now() - mTime) * 0.001);
+    if (l3 !== null) gl.uniform2f(l3, mCanvas.width, mCanvas.height);
+    if (l4 !== null) gl.uniform4f(l4, mMousePosX, mMousePosY, mMouseClickX, mMouseClickY);
+    if (l7 !== null) gl.uniform4f(l7, d.getFullYear(), d.getMonth(), d.getDate(),
+        d.getHours() * 60 * 60 + d.getMinutes() * 60 + d.getSeconds());
 
-    if (ch0 !== null)  gl.uniform1i(ch0, 0);
-    if (ch1 !== null)  gl.uniform1i(ch1, 1);
-    if (ch2 !== null)  gl.uniform1i(ch2, 2);
-    if (ch3 !== null)  gl.uniform1i(ch3, 3);
-    if (ch4 !== null)  gl.uniform1i(ch4, 4); //backbuffer
+    if (ch0 !== null) gl.uniform1i(ch0, 0);
+    if (ch1 !== null) gl.uniform1i(ch1, 1);
+    if (ch2 !== null) gl.uniform1i(ch2, 2);
+    if (ch3 !== null) gl.uniform1i(ch3, 3);
+    if (ch4 !== null) gl.uniform1i(ch4, 4); //backbuffer
 
-	 // gl.bindBuffer( gl.ARRAY_BUFFER, mQuadVBO);
-	 // gl.vertexAttribPointer(vertPosU, 2,  gl.FLOAT, false, 0, 0);
+    // gl.bindBuffer( gl.ARRAY_BUFFER, mQuadVBO);
+    // gl.vertexAttribPointer(vertPosU, 2,  gl.FLOAT, false, 0, 0);
 
-	//minputs
-	//fourband sound
-    if (mSound && bandsOn && mAudioContext !== null)
-    {
-    	if (bs !== null) { 
+    //minputs
+    //fourband sound
+    if (mSound && bandsOn && mAudioContext !== null) {
+        if (bs !== null) {
 
             gl.uniform4f(bs, mSound.low, mSound.mid, mSound.upper, mSound.high);
         }
-            if(bandsTimeU !== null) { //this is for per fft band time elapsed events
-                if(mSound.low > .7) 
-                    elapsedBandPeaks[0] = 0.0;
-                else 
-                    elapsedBandPeaks[0] += meter.duration * .001;
+        if (bandsTimeU !== null) { //this is for per fft band time elapsed events
+            if (mSound.low > .7)
+                elapsedBandPeaks[0] = 0.0;
+            else
+                elapsedBandPeaks[0] += meter.duration * .001;
 
-                if(mSound.mid > .7) 
-                    elapsedBandPeaks[1] = 0.0;
-                else 
-                    elapsedBandPeaks[1] += meter.duration * .001;
+            if (mSound.mid > .7)
+                elapsedBandPeaks[1] = 0.0;
+            else
+                elapsedBandPeaks[1] += meter.duration * .001;
 
-                if(mSound.upper > .7) 
-                    elapsedBandPeaks[2] = 0.0;
-                else 
-                    elapsedBandPeaks[2] += meter.duration * .001;
+            if (mSound.upper > .7)
+                elapsedBandPeaks[2] = 0.0;
+            else
+                elapsedBandPeaks[2] += meter.duration * .001;
 
-                if(mSound.high > .7) 
-                    elapsedBandPeaks[3] = 0.0;
-                else 
-                    elapsedBandPeaks[3] += meter.duration * .001;
+            if (mSound.high > .7)
+                elapsedBandPeaks[3] = 0.0;
+            else
+                elapsedBandPeaks[3] += meter.duration * .001;
 
-                gl.uniform4f(bandsTimeU, elapsedBandPeaks[0], elapsedBandPeaks[1], elapsedBandPeaks[2], elapsedBandPeaks[4]);
-            }
+            gl.uniform4f(bandsTimeU, elapsedBandPeaks[0], elapsedBandPeaks[1], elapsedBandPeaks[2], elapsedBandPeaks[4]);
+        }
         // }
     }
 
-    for (var i = 0; i < mInputs.length; i++)
-    {
-    	var inp = mInputs[i];
+    for (var i = 0; i < mInputs.length; i++) {
+        var inp = mInputs[i];
 
 
-    	 gl.activeTexture( gl.TEXTURE0 + i);
+        gl.activeTexture(gl.TEXTURE0 + i);
 
-    	if (inp === null)
-    	{
-    		 gl.bindTexture( gl.TEXTURE_2D, null);
-    	}
-    	else if (inp.type == "tex_2D")
-        {
-            if (inp.loaded ===false)
-                 gl.bindTexture( gl.TEXTURE_2D, null);
-            else
-            {
-                 gl.bindTexture( gl.TEXTURE_2D, inp.globject);
+        if (inp === null) {
+            gl.bindTexture(gl.TEXTURE_2D, null);
+        } else if (inp.type == "tex_2D") {
+            if (inp.loaded === false)
+                gl.bindTexture(gl.TEXTURE_2D, null);
+            else {
+                gl.bindTexture(gl.TEXTURE_2D, inp.globject);
                 resos[3 * i + 0] = inp.image.width;
                 resos[3 * i + 1] = inp.image.height;
                 resos[3 * i + 2] = 1;
             }
-        }
-        else if (inp.type == "tex_audio")
-        {
+        } else if (inp.type == "tex_audio") {
             mSound.mAnalyser.getByteTimeDomainData(mSound.mWaveData);
             mSound.mAnalyser.getByteFrequencyData(mSound.mFreqData);
-             gl.bindTexture( gl.TEXTURE_2D, inp.globject);
+            gl.bindTexture(gl.TEXTURE_2D, inp.globject);
             var waveLen = Math.min(mSound.mWaveData.length, 512);
-             gl.texSubImage2D( gl.TEXTURE_2D, 0, 0, 0, waveLen, 1,  gl.LUMINANCE,  gl.UNSIGNED_BYTE, mSound.mWaveData);
-             gl.texSubImage2D( gl.TEXTURE_2D, 0, 0, 1, 512, 1,  gl.LUMINANCE,  gl.UNSIGNED_BYTE, mSound.mFreqData);
-        }
-        else if (inp.type == "tex_keyboard") 
-    	{
+            gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, waveLen, 1, gl.LUMINANCE, gl.UNSIGNED_BYTE, mSound.mWaveData);
+            gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 1, 512, 1, gl.LUMINANCE, gl.UNSIGNED_BYTE, mSound.mFreqData);
+        } else if (inp.type == "tex_keyboard") {
             // if (inp.loaded === false)
             //     gl.bindTexture(gl.TEXTURE_2D, null);
             // else {
-             gl.bindTexture( gl.TEXTURE_2D, inp.globject);
+            gl.bindTexture(gl.TEXTURE_2D, inp.globject);
 
-             gl.pixelStorei( gl.UNPACK_FLIP_Y_WEBGL, false);
-             gl.texSubImage2D( gl.TEXTURE_2D, 0, 0, 0, 256, 2,  gl.LUMINANCE,  gl.UNSIGNED_BYTE, inp.mData);
+            gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+            gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, 256, 2, gl.LUMINANCE, gl.UNSIGNED_BYTE, inp.mData);
             // }
         }
     }
 
     // OSC values
-    for (var i = 0; i < oscM.length; i++)
-    {
-        if (oscM[i] !== null)
-        {
-             gl.uniform4fv(oscM[i].uniLoc, oscM[i].args);
+    for (var i = 0; i < oscM.length; i++) {
+        if (oscM[i] !== null) {
+            gl.uniform4fv(oscM[i].uniLoc, oscM[i].args);
         }
     }
 
-    // if (l5 !== null)  gl.uniform1fv(l5, times);
-    if (l8 !== null)  gl.uniform3fv(l8, resos);
+    //MIDI values
+    if (midi !== null) {
+        gl.uniform1iv(midiU, midiData);
+    }
 
-    gl.activeTexture( gl.TEXTURE4 ); //backbuffer as texture
-    gl.bindTexture( gl.TEXTURE_2D, fbos[pingPong].texture);
+    // if (l5 !== null)  gl.uniform1fv(l5, times);
+    if (l8 !== null) gl.uniform3fv(l8, resos);
+
+    gl.activeTexture(gl.TEXTURE4); //backbuffer as texture
+    gl.bindTexture(gl.TEXTURE_2D, fbos[pingPong].texture);
 
     pingPong = (pingPong + 1) % 2;
 
-    gl.bindFramebuffer( gl.FRAMEBUFFER, fbos[pingPong].framebuffer);
-    gl.clear( gl.COLOR_BUFFER_BIT);
-    gl.drawArrays( gl.TRIANGLE_STRIP, 0, 4);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fbos[pingPong].framebuffer);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
     //draw to screen
-    if (numScreens == 1) 
-    {
+    if (numScreens == 1) {
         // gl.blendFunc(gl.ONE, gl.ONE);
         gl.disable(gl.BLEND);
         gl.useProgram(screenProgram);
         gl.uniform2f(screenResU, mCanvas.width, mCanvas.height);
         gl.uniform1i(screenTexU, 0);
-        gl.activeTexture( gl.TEXTURE0 );
-        gl.bindTexture( gl.TEXTURE_2D, fbos[pingPong].texture);
-        
-        gl.bindFramebuffer( gl.FRAMEBUFFER, null);
-         gl.clear( gl.COLOR_BUFFER_BIT);
-         //center
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, fbos[pingPong].texture);
+
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        //center
         gl.uniform2f(translateUniform, $("#point1X").val(), $("#point1Y").val());
         gl.uniform2f(scaleUniform, $("#scale1X").val(), $("#scale1Y").val());
         gl.uniform1f(rotateUniform, $("#rotate1").val());
         gl.uniform4f(screenBlendU, 0.0, .001, 1.0, .001);
-                                // $("#blend2X").val(), $("#blend2Y").val(),
-                                // $("#blend2Z").val(), $("#blend2W").val());
+        // $("#blend2X").val(), $("#blend2Y").val(),
+        // $("#blend2Z").val(), $("#blend2W").val());
         gl.uniform4fv(gammaU, gammaValues);
-        gl.drawArrays( gl.TRIANGLE_STRIP, 0, 4);
-    }
-    else if (numScreens == 3)
-    {
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    } else if (numScreens == 3) {
         gl.blendFunc(gl.ONE, gl.ONE);
         gl.enable(gl.BLEND);
 
-         gl.enableVertexAttribArray(texLocationAttribute);
+        gl.enableVertexAttribArray(texLocationAttribute);
 
         gl.useProgram(screenProgram);
 
-        gl.bindBuffer( gl.ARRAY_BUFFER, mQuadVBO);
-        gl.vertexAttribPointer(vertPosU, 2,  gl.FLOAT, false, 0, 0);
-        gl.bindBuffer( gl.ARRAY_BUFFER, mQuadTVBO);
+        gl.bindBuffer(gl.ARRAY_BUFFER, mQuadVBO);
+        gl.vertexAttribPointer(vertPosU, 2, gl.FLOAT, false, 0, 0);
+        gl.bindBuffer(gl.ARRAY_BUFFER, mQuadTVBO);
         gl.vertexAttribPointer(texLocationAttribute, 2, gl.FLOAT, false, 0, 0);
 
 
         gl.uniform2f(screenResU, mCanvas.width, mCanvas.height);
         gl.uniform1i(screenTexU, 0);
-        gl.activeTexture( gl.TEXTURE0 );
+        gl.activeTexture(gl.TEXTURE0);
 
         if (testingImage)
-            gl.bindTexture( gl.TEXTURE_2D, testTexture);
+            gl.bindTexture(gl.TEXTURE_2D, testTexture);
         else
-            gl.bindTexture( gl.TEXTURE_2D, fbos[pingPong].texture);
+            gl.bindTexture(gl.TEXTURE_2D, fbos[pingPong].texture);
 
-        gl.bindFramebuffer( gl.FRAMEBUFFER, null);
-        gl.clear( gl.COLOR_BUFFER_BIT);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        gl.clear(gl.COLOR_BUFFER_BIT);
 
         // left
         gl.uniform2f(translateUniform, $("#point1X").val(), $("#point1Y").val());
         gl.uniform2f(scaleUniform, $("#scale1X").val(), $("#scale1Y").val());
         gl.uniform4f(screenBlendU, $("#blend1X").val(), $("#blend1Y").val(),
-                                    $("#blend1Z").val(), $("#blend1W").val());
+            $("#blend1Z").val(), $("#blend1W").val());
         gl.uniform1f(rotateUniform, $("#rotate1").val());
-        gl.drawArrays( gl.TRIANGLE_STRIP, 0, 4);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
         // right
         gl.uniform2f(translateUniform, $("#point3X").val(), $("#point3Y").val());
         gl.uniform2f(scaleUniform, $("#scale3X").val(), $("#scale3Y").val());
         gl.uniform4f(screenBlendU, $("#blend3X").val(), $("#blend3Y").val(),
-                                    $("#blend3Z").val(), $("#blend3W").val());
+            $("#blend3Z").val(), $("#blend3W").val());
         gl.uniform1f(rotateUniform, $("#rotate3").val());
-        gl.drawArrays( gl.TRIANGLE_STRIP, 0, 4);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
 
         //center
         gl.uniform2f(translateUniform, $("#point2X").val(), $("#point2Y").val());
         gl.uniform2f(scaleUniform, $("#scale2X").val(), $("#scale2Y").val());
         gl.uniform4f(screenBlendU, $("#blend2X").val(), $("#blend2Y").val(),
-                                    $("#blend2Z").val(), $("#blend2W").val());
+            $("#blend2Z").val(), $("#blend2W").val());
         gl.uniform1f(rotateUniform, $("#rotate2").val());
-        gl.drawArrays( gl.TRIANGLE_STRIP, 0, 4);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     }
 }
