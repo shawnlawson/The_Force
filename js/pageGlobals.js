@@ -1,6 +1,6 @@
 
 
-var mCanvas = null;
+var mCanvas = null, aCanvas = null;
 var  gl = null;
 var mAudioContext = null;
 
@@ -445,11 +445,15 @@ $( document ).ready(function()
     }
 
      // var k, f;
-    function updateFourBands()
+    var canv = document.getElementById('fourBands');
+    aCanvas = canv.getContext('2d');
+    aCanvas.width = 100;
+    aCanvas.height = 32;
+    
+     function updateFourBands()
     {
         //todo: speed this up
-        var ctx = $('#fourBands')[0].getContext('2d');
-        ctx.clearRect ( 0 , 0 , 100, 32 );
+        aCanvas.clearRect ( 0 , 0 , 100, 32 );
 
         if (!bandsOn) return;
         if (!mSound) return;
@@ -465,7 +469,7 @@ $( document ).ready(function()
 
         f *= .2; // 1/(a-0)
         f *= .003921569; // 1/255
-        drawBandsRect(0, ctx, f);
+        drawBandsRect(0, aCanvas, f);
         mSound.low = f;
 
         f = 0.0;
@@ -474,7 +478,7 @@ $( document ).ready(function()
 
         f *= .166666667; // 1/(b-a)
         f *= .003921569; // 1/255
-        drawBandsRect(1, ctx, f);
+        drawBandsRect(1, aCanvas, f);
         mSound.mid = f;
 
         f = 0.0;
@@ -483,7 +487,7 @@ $( document ).ready(function()
 
         f *= .076923077; // 1/(c-b)
         f *= .003921569; // 1/255
-        drawBandsRect(2, ctx, f);
+        drawBandsRect(2, aCanvas, f);
         mSound.upper = f;
 
         f = 0.0;
@@ -492,7 +496,7 @@ $( document ).ready(function()
 
         f *= .00204918; // 1/(d-c)
         f *= .003921569; // 1/255
-        drawBandsRect(3, ctx, f);
+        drawBandsRect(3, aCanvas, f);
         mSound.high = f;
     }
 
