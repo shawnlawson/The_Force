@@ -5,7 +5,7 @@ Life creates it, makes it grow. Its energy surrounds us and binds us. Luminous b
 Force felt by [Obi-Wan Codenobi](http://shawnlawson.com) for use in live-coding performances with [The Wookie](http://ryanrosssmith.com). Together they travel as [_The Rebel Scum_](http://codenobiandwookie.com).
 
 ## API
-If you're looking or which functions are built-in, then give the wiki [API](./wiki/API) a look.
+If you're looking for which functions are built-in, then give the wiki [API](./wiki/API) a look.
 
 ### Additionally helpful to know
 
