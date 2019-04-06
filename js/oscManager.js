@@ -114,6 +114,7 @@ function initOSC() {
         var message = new OSC.Message($("#consoleMessage").val(), 
                                       parseFloat($("#consoleValue").val()),
                                       parseInt($("#consoleLine").val()));
+        console.log(message);
             osc.send(message);
     }});
     
@@ -131,7 +132,6 @@ function sendOSCMessages()
             var mathValue = eval(count.length + $("#outOSCMath" + i).val() );
             var message = new OSC.Message($("#outOSCAddr" + i).val(), mathValue, parseInt($("#outOSCLine" + i).val()));
             osc.send(message);
-
             if ($('#oscPanel').length)//onscreen
             {
                 $("#rawOutMessages" + i).html(count.length);

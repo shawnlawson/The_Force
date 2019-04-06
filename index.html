@@ -340,6 +340,9 @@ uvN()             = vec2(x, y); // this pixel on screen when
                               // coordinate system is: width 
                               // 0.0 to 1.0, height 0.0 to 1.0; 
                               // bottom-left of canvas is origin
+kale(vec2 p, float n) = float // Accepts UV-like space, and 
+                              // divisions of PI. Returns a 
+                              // kaleidoscope value
 rand(float x)   = float       // pseudo-random 0.0 to 1.0
 rand(vec2 x)    = float
 noise( float )  = float       // noise 0.0 to 1.0    
@@ -360,7 +363,7 @@ rmf(vec2 x, int it) = float   // rigid multi-fractal generator
                               // second parameter is number of iterations
 vrmf(vec2 x, int it) = float  // Voronoi version of rigid multi-fractal
                               // second parameter is number of iterations
-vmbf(vec2 x, int it) = float  // Voronoi version of Brownian motion
+vfbm(vec2 x, int it) = float  // Voronoi version of Brownian motion
                               // second parameter is number of iterations
 
 hsv2rgb( vec3 ) = vec3        // convert hue, saturation, value to 

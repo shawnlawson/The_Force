@@ -27,10 +27,13 @@ SERVER_HTTP_PORT = 9000
 SERVER_HTTP_RESOURCES = 'web'
 
 # To someone/thing else
+# to Bela
 CLIENT_IP = '192.168.7.2'
 CLIENT_UDP_PORT = 7562
+#remote
 # CLIENT_IP = '10.0.0.1'
 # CLIENT_UDP_PORT = 7500
+#local
 # CLIENT_IP = '127.0.0.1'
 # CLIENT_UDP_PORT = 8888
 
