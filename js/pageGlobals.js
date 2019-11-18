@@ -35,11 +35,11 @@ $( document ).ready(function()
         })
         .mouseleave( function(event)
         {
-            $('#footerUI').fadeOut('slow');  
+            $('#footerUI').fadeOut('slow');
         });
 
-    meter = new FPSMeter( document.getElementById("myFrameRate"),  
-                { 
+    meter = new FPSMeter( document.getElementById("myFrameRate"),
+                {
                     top: '4px',
                     graph: 0,
                     theme: 'codenobi'
@@ -50,7 +50,7 @@ $( document ).ready(function()
             // style:"popup" //hope jqueryUI implements this soon.
             position: {collision: "flip"}
         })
-        .on("selectmenuchange", function(event) 
+        .on("selectmenuchange", function(event)
         {
             quality = $("#selectQuality").val();
             resizeGLCanvas(window.innerWidth, window.innerHeight);
@@ -60,7 +60,7 @@ $( document ).ready(function()
         .selectmenu({
             position: {collision: "flip"}
         })
-        .on("selectmenuchange", function(event) 
+        .on("selectmenuchange", function(event)
         {
             document.getElementById('editor').style.fontSize = $("#selectFontSize").val()+'px';
         });
@@ -84,12 +84,12 @@ $( document ).ready(function()
         })
         .on("selectmenuchange", function(event)
         {
-           $("#selectMIDIOut").val(); 
+           $("#selectMIDIOut").val();
         });
 
     $("#audioButton")
         .button()
-        .click( function() 
+        .click( function()
         {   // we do this check, because for some reason closing the dialog
             // looses the file and server sound
             if ($("#audioPanel").dialog( "isOpen" ))
@@ -155,9 +155,9 @@ $( document ).ready(function()
             var blob = new Blob([editor.getValue()], {type: "text/plain;charset=utf-8"});
             var d = new Date();
             d.setMonth( d.getMonth( ) + 1 );
-            var fName = d.getFullYear()+"_"+d.getMonth()+"M_"+d.getDate()+"D_"+        
+            var fName = d.getFullYear()+"_"+d.getMonth()+"M_"+d.getDate()+"D_"+
                         d.getHours()+"H_"+d.getMinutes()+"m_"+d.getSeconds()+"s";
-        
+
             saveAs(blob, "the_force_"+fName+".frag");
         });
 
@@ -166,22 +166,22 @@ $( document ).ready(function()
         .click( function(event)
         {
             var aCanvas = document.getElementById("demogl"),
-                    ctx = aCanvas.getContext("2d"); 
+                    ctx = aCanvas.getContext("2d");
             aCanvas.toBlob( function(blob)
             {
                 var d = new Date();
-                var fName = d.getFullYear()+"_"+d.getMonth()+"_"+d.getDate()+"_"+        
+                var fName = d.getFullYear()+"_"+d.getMonth()+"_"+d.getDate()+"_"+
                             d.getHours()+"_"+d.getMinutes()+"_"+d.getSeconds();
-        
+
                 saveAs(blob, "the_force_"+fName+".png");
             });
-            
+
         });
 
     $("#play")
         .button()
         .bind("change", function(event)
-        {   //because this is checked every frame, 
+        {   //because this is checked every frame,
             //I think bool is faster than jquery checkbox->state?
             mIsPaused = !mIsPaused;
         });
@@ -199,11 +199,11 @@ $( document ).ready(function()
         {
             if(!window.screenTop && !window.screenY)
             {
-                if (document.exitFullscreen) 
+                if (document.exitFullscreen)
                     document.exitFullscreen();
-                else if (document.mozCancelFullScreen) 
+                else if (document.mozCancelFullScreen)
                    document.mozCancelFullScreen();
-                else if (document.webkitExitFullscreen) 
+                else if (document.webkitExitFullscreen)
                    document.webkitExitFullscreen();
             } else {
                 if (document.body.requestFullScreen)
@@ -256,23 +256,23 @@ $( document ).ready(function()
         .click( function(event)
         {
             event.preventDefault();
-            navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+            navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mediaDevices.getUserMedia || navigator.msGetUserMedia;
 
-            if (window.location.protocol != "https:") 
+            if (window.location.protocol != "https:")
                 alert("Browser may not support microphone on non-secure connection. Please copy your code before changing protocol in the URL from http to https.");
 
-            if (navigator.getUserMedia) 
+            if (navigator.getUserMedia)
             {
                 initAudio();
                 navigator.getUserMedia(
-                    {audio: true}, 
+                    {audio: true},
                     function(stream)  //success
                     {
                         mSound.mStream = stream;
                         mSound.mSource = mAudioContext.createMediaStreamSource(stream);
                         mSound.mSource.disconnect();
                         mSound.mSource.connect(mSound.mAnalyser);
-                    }, 
+                    },
                     function() //failure
                     {
                         alert("Error getting user media stream.");
@@ -315,7 +315,7 @@ $( document ).ready(function()
             $(this).after(audio);
 
             mSound.mSource = mAudioContext.createMediaElementSource(audio);
-            
+
             mSound.mSource.connect(mSound.mAnalyser);
             mSound.mAnalyser.connect(mAudioContext.destination);
 
@@ -336,7 +336,7 @@ $( document ).ready(function()
         .change( function(event)
         {
             initAudio();
-            
+
             if ($("#soundFile").length)
                 $("#soundFile").remove();
 
@@ -344,7 +344,7 @@ $( document ).ready(function()
             var urls = [];
             for (var i = 0; i < this.files.length; i++)
             {
-                urls[i] = URL.createObjectURL(this.files[i]); 
+                urls[i] = URL.createObjectURL(this.files[i]);
                 exts[i] = this.files[i].name.split(".").pop();
             }
 
@@ -355,10 +355,10 @@ $( document ).ready(function()
   // var min = Math.floor((secs - (hr * 3600))/60);
   // var sec = Math.floor(secs - (hr * 3600) -  (min * 60));
 
-  // if (min < 10){ 
-  //   min = "0" + min; 
+  // if (min < 10){
+  //   min = "0" + min;
   // }
-  // if (sec < 10){ 
+  // if (sec < 10){
   //   sec  = "0" + sec;
   // }
   //min + ':' + sec
@@ -388,7 +388,7 @@ $( document ).ready(function()
         // this.play();
         // }, false);
 
-    function createAudioElement(urls, exts, name) 
+    function createAudioElement(urls, exts, name)
     {
         var audioElement = document.createElement("audio");
 
@@ -397,12 +397,12 @@ $( document ).ready(function()
         audioElement.loop = false;
         audioElement.controls = true;
 
-        for (var i = 0; i < urls.length; ++i) 
+        for (var i = 0; i < urls.length; ++i)
         {
             var typeStr = "audio/" + exts[i];//"audio/" + urls[i].split(".").pop();
 
             if (audioElement.canPlayType === undefined ||
-                audioElement.canPlayType(typeStr).replace(/no/, "")) 
+                audioElement.canPlayType(typeStr).replace(/no/, ""))
             {
                 var sourceElement = document.createElement("source");
                 sourceElement.type = typeStr;
@@ -422,24 +422,24 @@ $( document ).ready(function()
             mSound.low = mSound.mid = mSound.upper = mSound.high = 0.0;
             mSound.mAnalyser = mAudioContext.createAnalyser();
             mSound.mAnalyser.smoothingTimeConstant = 0.5;
-            mSound.mAnalyser.fft = 512; 
+            mSound.mAnalyser.fft = 512;
             mSound.mFreqData = new Uint8Array(mSound.mAnalyser.frequencyBinCount);
             mSound.mWaveData = new Uint8Array(512);
 
             mSound.javascriptNode = mAudioContext.createScriptProcessor(1024, 2, 2);
             mSound.mAnalyser.connect(mSound.javascriptNode);
             mSound.javascriptNode.connect(mAudioContext.destination);
-            mSound.javascriptNode.onaudioprocess = function() 
+            mSound.javascriptNode.onaudioprocess = function()
             {
-                updateFourBands(); 
+                updateFourBands();
             };
         }
 
         if (mSound.mStream)
-        {   //clean up any user media stream 
+        {   //clean up any user media stream
             mSound.mStream.stop();
             mSound.mStream = null;
-        } 
+        }
 
         bandsOn = false;
     }
@@ -449,7 +449,7 @@ $( document ).ready(function()
     aCanvas = canv.getContext('2d');
     aCanvas.width = 100;
     aCanvas.height = 32;
-    
+
      function updateFourBands()
     {
         //todo: speed this up
@@ -460,7 +460,7 @@ $( document ).ready(function()
         if (mAudioContext === null) return;
 
         mSound.mAnalyser.getByteFrequencyData(mSound.mFreqData);
-        
+
         var k = 0;
         var f = 0.0;
         var a = 5, b = 11, c = 24, d = 512, i = 0;
@@ -500,7 +500,7 @@ $( document ).ready(function()
         mSound.high = f;
     }
 
-    function drawBandsRect(which, ctx, value) 
+    function drawBandsRect(which, ctx, value)
     {
         var rr = parseInt(255 * value);
 
@@ -529,7 +529,7 @@ $( document ).ready(function()
         });
 
     $('.textureSlot')
-        .click( function(event) 
+        .click( function(event)
         {
             $( ".textureSlot" ).animate(
                 {
@@ -539,7 +539,7 @@ $( document ).ready(function()
                 {
                     backgroundColor: "rgba(0, 255, 0, 0.4)",
                 }, .250 );
-            whichSlot = event.target.id;     
+            whichSlot = event.target.id;
         })
         .hover( function(event)
         {
@@ -547,14 +547,14 @@ $( document ).ready(function()
                 {
                     backgroundColor: "rgba(255, 255, 255, 1.0)",
                 }, .250 );
-            
+
         }, function(event)
         {
             $(this).animate(
                 {
                     backgroundColor: "rgba(255, 255, 255, 0.5)",
                 }, .250 );
-            if (whichSlot == event.target.id) 
+            if (whichSlot == event.target.id)
             {
                 $(this).animate(
                 {
@@ -564,7 +564,7 @@ $( document ).ready(function()
         });
 
     $('.textureOption')
-        .click( function(event) 
+        .click( function(event)
         {
             var slotID = whichSlot.slice(-1);
             destroyInput(slotID);
@@ -594,9 +594,9 @@ $( document ).ready(function()
                             backgroundColor: "rgba(255, 255, 255, 0.5)",
                         }, .250 );
                     whichSlot = "";
-            
+
                     texture.mData = new Uint8Array(256 * 2);
-                    for (var j = 0; j < (256 * 2); j++) 
+                    for (var j = 0; j < (256 * 2); j++)
                     {
                         texture.mData[j] = 0;
                     }
@@ -621,7 +621,7 @@ $( document ).ready(function()
                     whichSlot = "";
 
                     texture.mData = new Uint8Array(512 * 2);
-                    for (var j = 0; j < (512 * 2); j++) 
+                    for (var j = 0; j < (512 * 2); j++)
                     {
                         texture.mData[j] = 0;
                     }
@@ -699,7 +699,7 @@ $( document ).ready(function()
                 {
                     backgroundColor: "rgba(255, 255, 255, 1.0)",
                 }, .250 );
-            
+
         }, function(event)
         {
             $(this).animate(
@@ -707,7 +707,7 @@ $( document ).ready(function()
                     backgroundColor: "rgba(255, 255, 255, 0.25)",
                 }, .250 );
         });
-    
+
     //--------------------- PROJECTION MAPPING PANEL ------------
     $("#edgesPanel")
         .dialog({
@@ -725,19 +725,19 @@ $( document ).ready(function()
 
     //todo fix input radios for only this panel
     $('input[name="radio"]').click(function() {
-        numScreens = $(this).val(); 
-        if (numScreens == 1) 
+        numScreens = $(this).val();
+        if (numScreens == 1)
         {
             $("#editor").width('100%');
-        } 
-        else if (numScreens == 3) 
+        }
+        else if (numScreens == 3)
         {
             $("#editor").width('30%');
         }
     });
 
     $("#testImage").click(function() {
-        if (testingImage) 
+        if (testingImage)
             testingImage = false;
         else
             testingImage = true;
@@ -746,7 +746,7 @@ $( document ).ready(function()
     $("#saveMapping").click( function(event)
     {
         var mappingSettings = "{ ";
-        $("#edgesValues").children("input").each( function() 
+        $("#edgesValues").children("input").each( function()
         {
             mappingSettings += '"'
             mappingSettings += $(this).attr('id');
@@ -761,13 +761,13 @@ $( document ).ready(function()
         var blob = new Blob([mappingSettings], {type: "text/plain;charset=utf-8"});
         var d = new Date();
         d.setMonth( d.getMonth( ) + 1 );
-        var fName = d.getFullYear()+"_"+d.getMonth()+"M_"+d.getDate()+"D_"+        
+        var fName = d.getFullYear()+"_"+d.getMonth()+"M_"+d.getDate()+"D_"+
                     d.getHours()+"H_"+d.getMinutes()+"m_"+d.getSeconds()+"s";
-    
+
         saveAs(blob, "the_force_"+fName+".mapping");
     });
 
-    $("#loadMapping").click( function(event) 
+    $("#loadMapping").click( function(event)
     {
         $("#mySettings").trigger('click');
     });
@@ -780,15 +780,15 @@ $( document ).ready(function()
         else
             file = event.dataTransfer.files;
 
-        for (var i = 0, f; f = file[i]; i++) 
+        for (var i = 0, f; f = file[i]; i++)
         {
-            if (f.name.slice(-8) == ".mapping") 
+            if (f.name.slice(-8) == ".mapping")
             {
                 var reader = new FileReader();
-                reader.onload = ( function(theFile) 
+                reader.onload = ( function(theFile)
                 {
                     return function(e) {
-                        var data = JSON.parse(reader.result, function(k, v) 
+                        var data = JSON.parse(reader.result, function(k, v)
                             {
                                 $("#"+k).val(v)
                             });
@@ -878,14 +878,14 @@ $( document ).ready(function()
             $("#gammaSlider").slider( "value", v );
         })
         .val( $("#gammaSlider").slider( "value" ) );
-    
+
     function fixSliderValue(input)
     {
         if (input < .2)
             return .2;
         if (input > 2.2)
             return 2.2;
-        
+
         return input;
     }
 
@@ -924,9 +924,9 @@ $( document ).ready(function()
             showGutter: codeEl.getAttribute("ace-gutter"),
             trim: true
         }, function (highlighted) {
-            
+
         });
-        
+
     });
 
     //--------------------- NETWORK OSC PANEL ------------
@@ -954,7 +954,7 @@ $( document ).ready(function()
 
     // --- audio context ---------------------
     var contextAvailable = window.AudioContext || window.webkitAudioContext || window.mozAudioContext || window.oAudioContext || window.msAudioContext;
-    
+
     if(contextAvailable)
         mAudioContext = new contextAvailable();
     else
@@ -971,7 +971,7 @@ $( document ).ready(function()
     // enable autocompletion and snippets
     editor.setOptions({
         enableBasicAutocompletion: false,
-        enableSnippets: true , 
+        enableSnippets: true ,
         enableLiveAutocompletion: true
     });
 
@@ -986,7 +986,7 @@ $( document ).ready(function()
     }else{
         editor.setValue("void main () {\n\tgl_FragColor = vec4(black, 1.0);\n}", -1);
     }
-   
+
     // mCodeMirror.on("drop", function( mCodeMirror, event )
     //             {
     //                 event.stopPropagation();
@@ -995,7 +995,7 @@ $( document ).ready(function()
     //             });
 
     function renderLoop2()
-    {   
+    {
         requestAnimationFrame(renderLoop2);
 
         if (gl === null) return;
@@ -1011,7 +1011,7 @@ $( document ).ready(function()
       var sec = Math.floor(secs) % 60;
 
         if (min < 10)
-            min = "0" + min; 
+            min = "0" + min;
         if (sec < 10)
             sec  = "0" + sec;
 
@@ -1027,7 +1027,7 @@ $( document ).ready(function()
 
     var player =  document.getElementById('player');
     var uiUpdater = new UiUpdater();
-    
+
     player.crossorigin="anonymous";
     var loader = new SoundcloudLoader(player,uiUpdater);
 
@@ -1069,7 +1069,7 @@ $(document)
         mMouseClickX = event.pageX;
         mMouseClickY = event.pageY;
     })
-    .mouseup( function( event ) 
+    .mouseup( function( event )
     { })
     .keydown( function( event )
     {
@@ -1101,7 +1101,7 @@ $(document)
     });
 
 $(window)
-    .resize(function() 
+    .resize(function()
     {
         resizeGLCanvas(window.innerWidth, window.innerHeight);
     });
@@ -1114,18 +1114,18 @@ function openFile(event)
     else
         file = event.dataTransfer.files;
 
-    for (var i = 0, f; f = file[i]; i++) 
+    for (var i = 0, f; f = file[i]; i++)
     {
-        if (f.name.slice(-5) == ".frag") 
+        if (f.name.slice(-5) == ".frag")
         {
             var reader = new FileReader();
 
-            reader.onload = (function(theFile) 
+            reader.onload = (function(theFile)
             {
                 return function(e) {
                     editor.setValue(reader.result, -1);
                 };
-            })(f); 
+            })(f);
 
             reader.readAsText(f, "text/plain;charset=utf-8");
         }
@@ -1136,15 +1136,15 @@ var Range = ace.require("ace/range").Range
 
 function setShader(result, fromScript)
 {
-    while (mErrors.length > 0) 
+    while (mErrors.length > 0)
     {
         var mark = mErrors.pop();
         editor.session.removeMarker(mark);
     }
-        
+
     editor.session.clearAnnotations();
 
-    if (result.mSuccess === false) 
+    if (result.mSuccess === false)
     {
         var lineOffset = getHeaderSize();
         var lines = result.mInfo.match(/^.*((\r\n|\n|\r)|$)/gm);
@@ -1152,7 +1152,7 @@ function setShader(result, fromScript)
         for (var i = 0; i < lines.length; i++) {
             var parts = lines[i].split(":");
 
-            if (parts.length === 5 || parts.length === 6) 
+            if (parts.length === 5 || parts.length === 6)
             {
                 var annotation = {};
                 annotation.row = parseInt(parts[2]) - lineOffset;
@@ -1161,14 +1161,14 @@ function setShader(result, fromScript)
 
                 if(debugging)
                     tAnnotations.push(annotation);
-                
+
                 var id = editor.session.addMarker(new Range(annotation.row, 0, annotation.row, 1), "errorHighlight", "fullLine", false);
                 mErrors.push(id);
-            } 
+            }
         }
 
         if(debugging) {
-            console.log(result.mInfo); 
+            console.log(result.mInfo);
             editor.session.setAnnotations(tAnnotations);
         }
     }
