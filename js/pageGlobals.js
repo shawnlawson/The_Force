@@ -256,26 +256,22 @@ $( document ).ready(function()
         .click( function(event)
         {
             event.preventDefault();
-            navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mediaDevices.getUserMedia || navigator.msGetUserMedia;
 
             if (window.location.protocol != "https:")
                 alert("Browser may not support microphone on non-secure connection. Please copy your code before changing protocol in the URL from http to https.");
 
-            if (navigator.getUserMedia)
+            if (navigator.mediaDevices)
             {
                 initAudio();
-                navigator.getUserMedia(
-                    {audio: true},
-                    function(stream)  //success
-                    {
-                        mSound.mStream = stream;
-                        mSound.mSource = mAudioContext.createMediaStreamSource(stream);
-                        mSound.mSource.disconnect();
-                        mSound.mSource.connect(mSound.mAnalyser);
-                    },
-                    function() //failure
-                    {
-                        alert("Error getting user media stream.");
+                navigator.mediaDevices.getUserMedia({audio: true, video: false})
+                    .then( function(stream) { //success
+                            mSound.mStream = stream;
+                            mSound.mSource = mAudioContext.createMediaStreamSource(stream);
+                            mSound.mSource.disconnect();
+                            mSound.mSource.connect(mSound.mAnalyser);
+                    })
+                    .catch( function(err) { //failure
+                        alert("Error getting user media stream." + err);
                     });
 
                 $("#micTogglePlaythrough").button("enable");
