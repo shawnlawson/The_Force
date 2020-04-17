@@ -412,7 +412,8 @@ $( document ).ready(function()
 
     function initAudio()
     {
-        if (mSound === null)
+        mAudioContext = new contextAvailable();
+        // if (mSound === null)
         {   // build a new sound object
             mSound = {};
             mSound.low = mSound.mid = mSound.upper = mSound.high = 0.0;
@@ -431,11 +432,12 @@ $( document ).ready(function()
             };
         }
 
-        if (mSound.mStream)
-        {   //clean up any user media stream
-            mSound.mStream.stop();
-            mSound.mStream = null;
-        }
+        // if (mSound.mStream)
+        // {   //clean up any user media stream
+            // console.log(mSound.mStream)
+            // mSound.mStream.stop();
+            // mSound.mStream = null;
+        // }
 
         bandsOn = false;
     }
@@ -951,8 +953,9 @@ $( document ).ready(function()
     // --- audio context ---------------------
     var contextAvailable = window.AudioContext || window.webkitAudioContext || window.mozAudioContext || window.oAudioContext || window.msAudioContext;
 
-    if(contextAvailable)
-        mAudioContext = new contextAvailable();
+    if(contextAvailable) {
+        // mAudioContext = new contextAvailable();
+    }
     else
         alert("This browser doesn't support Audio Contexts. Audio input will not be available.");
 
