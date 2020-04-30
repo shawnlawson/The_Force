@@ -3,12 +3,16 @@ void main () {
     float theta = atan(st.x, st.y)/PI2 +.5; float phi = log(length(st)) * .5;
     vec3 c = black;
 
-    float d = phi * noise(rotate(st, vec2(0.0, 0.), time * .1) * 6.5) - time * .5 + bands.x;
-    c = sin( d * 11. + bands.y * orange);
+    // float d = phi * noise(rotate(st, vec2(0.0, 0.), time * .1) * 6.5) - time * .5 + bands.x;
+    // c = sin( d * 11. + bands.y * orange);
+    // when audio is on, uncomment the above two lines and comment out the below two lines
+    float d = phi * noise(rotate(st, vec2(0.0, 0.), time * .1) * 6.5) - time * .5;
+    c = sin( d * 11. + 1. * orange);
+
 
     vec3 bb = texture2D(backbuffer, stN).rgb;
     c = mix(c, bb, .94) + c * .3;
 
 
-	gl_FragColor = vec4(c, 1.0);
+    gl_FragColor = vec4(c, 1.0);
 }

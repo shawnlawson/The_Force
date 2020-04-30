@@ -7,18 +7,24 @@ void main () {
         float tt = float(i) * PI;
         float x = fract(tt) * 4. - 2.;
         float y = rand(floor(tt * time * .01)) * 2. - 1.;
-        
+
         vec2 s = vec2 (phi, st.y);
         s = rotate(s, vec2(sin(time)), time * 5.);
-        
-        c += box(s-vec2(x, y), vec2(.01, .01), .0001 + .2 * bands.y, .01) * teal;
-        c += box(s-vec2(x, y), vec2(.001, .001) * 1.5 * bands.x, .0001 + .01 * bands.y, .1) * white;
-        
+
+        // c += box(s-vec2(x, y), vec2(.01, .01), .0001 + .2 * bands.y, .01) * teal;
+        // c += box(s-vec2(x, y), vec2(.001, .001) * 1.5 * bands.x, .0001 + .01 * bands.y, .1) * white;
+        // when audio is on, uncomment the above two lines and comment out the below two lines
+        c += box(s-vec2(x, y), vec2(.01, .01), .0001 + .2, .01) * teal;
+        c += box(s-vec2(x, y), vec2(.001, .001) * 1.5 , .0001 + .01, .1) * white;
+
+
     }
- 
-    c = c * sin(c * orange + time) * bands.z;
+
+    // c = c * sin(c * orange + time) * bands.z;
+    // when audio is on, uncomment the above line and comment out the below line
+    c = c * sin(c * orange + time);
     vec3 bb =  texture2D(backbuffer, stN).rgb;
     c = mix(c, bb, .9) + c * .1;
 
-	gl_FragColor = vec4(c, 1.0);
+    gl_FragColor = vec4(c, 1.0);
 }
