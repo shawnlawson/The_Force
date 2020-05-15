@@ -499,6 +499,38 @@ ft     = float
             <label for="myFullScreen" class="uiButton" title="Toggle Fullscreen"></label>
         </div>
     </div>
+     <!-- video =================================================================================== -->
+     <video id="video" style="display:none"></video>
+    <script>
+        video = document.getElementById( 'video' );
+     
+        window.addEventListener('DOMContentLoaded', function(){
+                navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia || navigator.oGetUserMedia;
+        
+            if (navigator.getUserMedia) {       
+                navigator.getUserMedia({video: true, audio: false}, handleVideo, videoError);
+            }
+            else{
+            alert('Your browser does not support getUserMedia. Try Chrome or Firefox instead')
+            }
+            function handleVideo(stream) {
+            var url = window.URL || window.webkitURL;
+            video.srcObject = stream;
+            //  video.src = url ? url.createObjectURL(stream) : stream;
+                video.play();
+                //video.src = window.URL.createObjectURL(stream);
+                videoLoaded = true;
+                $('#infoBox').fadeOut(1000);
+            }
+        
+            function videoError(e) {
+            alert("There seems to be something wrong with your webcam :( Maybe try reloading the page");
+                return;
+            }
+
+  });
+
+    </script>
     <!-- canvas =================================================================================== -->
     <canvas id="demogl"></canvas>
 </body>
