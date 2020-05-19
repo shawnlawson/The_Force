@@ -315,13 +315,13 @@ teal    = vec3(0.396,0.878,0.878);
             </div>
             <div id="tabsHelp-2">
                 <pre class="codeHighlight" ace-mode="ace/mode/glsl" ace-theme="ace/theme/monokai">
-resolution      = vec2(canvas width, canvas height); // value in pixels, 
-                                                     // divided by pixel 
+resolution      = vec2(canvas width, canvas height); // value in pixels,
+                                                     // divided by pixel
                                                      // size
 time            = float;     // system time
 <!-- channelTime[4]  -->
 mouse           = vec4(mouse X, mouse Y, mouse click X, mouse click Y);
-date            = vec4(); 
+date            = vec4();
 <!-- channelResolution[4]  -->
 bands           = vec4(low, mid-low, mid-high, high) // FFT results
 backbuffer      = texture2D; // previous render frame
@@ -331,34 +331,34 @@ backbuffer      = texture2D; // previous render frame
                 <pre class="codeHighlight" ace-mode="ace/mode/glsl" ace-theme="ace/theme/monokai">
 PI              = 3.14159;
 PI2             = 6.28318;
-uv()            = vec2(x, y); // This pixel on screen when 
+uv()            = vec2(x, y); // This pixel on screen when
                               // coordinate system is: width
                               //  -width/height to width/height
                               //, height -1.0 to 1.0;
                               // center of canvas is origin
-uvN()             = vec2(x, y); // this pixel on screen when 
-                              // coordinate system is: width 
-                              // 0.0 to 1.0, height 0.0 to 1.0; 
+uvN()             = vec2(x, y); // this pixel on screen when
+                              // coordinate system is: width
+                              // 0.0 to 1.0, height 0.0 to 1.0;
                               // bottom-left of canvas is origin
-kale(vec2 p, float n) = float // Accepts UV-like space, and 
-                              // divisions of PI. Returns a 
+kale(vec2 p, float n) = float // Accepts UV-like space, and
+                              // divisions of PI. Returns a
                               // kaleidoscope value
 rand(float x)   = float       // pseudo-random 0.0 to 1.0
 rand(vec2 x)    = float
-noise( float )  = float       // noise 0.0 to 1.0    
+noise( float )  = float       // noise 0.0 to 1.0
 noise( vec2 )   = float
-noise( vec3 )   = float         
+noise( vec3 )   = float
 snoise( vec2 )  = float       // signed noise -1.0 to 0.0
 snoise( vec3 )  = float
 turbulence( vec2,
             float octaves ) = float    //returns random values 0.0 to 1.0
-voronoi( vec2 ) = float       // returns 0.0 to 1.0 with a smooth 
+voronoi( vec2 ) = float       // returns 0.0 to 1.0 with a smooth
                               // voronoi pattern
 voronoi( vec3 ) = vec3        // returns a vec3 voronoi in three dimensions
 fbm(float x, int it) = float  // Brownian motion function generator
                               // second parameter is number of iterations
-fbm(vec2 x, int it) = float 
-fbm(vec3 x, int it) = float 
+fbm(vec2 x, int it) = float
+fbm(vec3 x, int it) = float
 rmf(vec2 x, int it) = float   // rigid multi-fractal generator
                               // second parameter is number of iterations
 vrmf(vec2 x, int it) = float  // Voronoi version of rigid multi-fractal
@@ -366,21 +366,21 @@ vrmf(vec2 x, int it) = float  // Voronoi version of rigid multi-fractal
 vfbm(vec2 x, int it) = float  // Voronoi version of Brownian motion
                               // second parameter is number of iterations
 
-hsv2rgb( vec3 ) = vec3        // convert hue, saturation, value to 
+hsv2rgb( vec3 ) = vec3        // convert hue, saturation, value to
                               // red, green, blue
-rotate(vec2 pivot, 
-       vec2(x, y), 
+rotate(vec2 pivot,
+       vec2(x, y),
        float amount)
 
-box(vec2(x, y), 
-    vec2(width, height), 
+box(vec2(x, y),
+    vec2(width, height),
     float corner-roundness,
     float edge-feathering);
 
 circle(float x,
-       float y, 
-       float radius, 
-       float edge-feathering) 
+       float y,
+       float radius,
+       float edge-feathering)
                 </pre>
             </div>
             <div id="tabsHelp-4">
@@ -412,18 +412,18 @@ mod(x, y)       // modulus
 min(x, y)       // minimum value
 max(x, y)       // maximum value
 clamp(x,        // keep x between minVal and maxVal
-      minVal, 
-      maxVal)         
+      minVal,
+      maxVal)
 mix(x, y, a)    // linear blend of x and y using a. (lerp)
 step(edge, x)   // 0.0 if x less than edge, else 1.0
 smoothstep(edge0, // clip and smooth
            edge1,
-           x)          
+           x)
                  </pre>
             </div>
             <div id="tabsHelp-5">
                 <pre class="codeHighlight" ace-mode="ace/mode/glsl" ace-theme="ace/theme/monokai">
-gl_FragCoord = vec4(x, y, z, w) // fragment position within 
+gl_FragCoord = vec4(x, y, z, w) // fragment position within
                                 // frame buffer window coordinates
 
 gl_FragColor = vec4(r, g, b, a) // fragment color
@@ -499,36 +499,8 @@ ft     = float
             <label for="myFullScreen" class="uiButton" title="Toggle Fullscreen"></label>
         </div>
     </div>
-     <!-- video =================================================================================== -->
-     <video id="video" style="display:none"></video>
-    <script>
-        video = document.getElementById( 'video' );
-     
-        window.addEventListener('DOMContentLoaded', function(){
-                navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia || navigator.oGetUserMedia;
-        
-            if (navigator.getUserMedia) {       
-                navigator.getUserMedia({video: true, audio: false}, handleVideo, videoError);
-            }
-            else{
-            alert('Your browser does not support getUserMedia. Try Chrome or Firefox instead')
-            }
-            function handleVideo(stream) {
-                var url = window.URL || window.webkitURL;
-                video.srcObject = stream;
-                video.play();
-                videoLoaded = true;
-                $('#infoBox').fadeOut(1000);
-            }
-        
-            function videoError(e) {
-            alert("There seems to be something wrong with your webcam :( Maybe try reloading the page");
-                return;
-            }
-
-  });
-
-    </script>
+    <!-- video =================================================================================== -->
+    <video id="video" style="display:none"></video>
     <!-- canvas =================================================================================== -->
     <canvas id="demogl"></canvas>
 </body>

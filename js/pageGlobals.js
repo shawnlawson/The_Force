@@ -13,6 +13,7 @@ var mFpsFrame = 0.0;
 var quality = 2;
 var meter = null;
 var mSound = null;
+var mWebCam = null;
 var bandsOn = false;
 var mTime;
 var whichSlot;
@@ -603,17 +604,30 @@ $( document ).ready(function()
                     break;
 
                 case "tex_webcam":
+                    if (mWebCam === null)
+                        mWebCam = document.getElementById( 'video' )
+
+                    navigator.mediaDevices.getUserMedia({audio: false, video: true})
+                        .then( function(stream) { //success
+                            mWebCam.srcObject = stream;
+                            mWebCam.play()
+                        })
+                        .catch( function(err) { //failure
+                            alert("Error getting user media stream." + err);
+                            mWebCam = null
+                        });
+
                     texture.type = "tex_webcam";
                     texture.globject =  gl.createTexture();
-                $("#"+whichSlot)
-                    .attr('src', 'presets/previz/webcam.png')
-                    .animate(
-                        {
-                            backgroundColor: "rgba(255, 255, 255, 0.5)",
-                        }, .250 );
-                whichSlot = "";
-                createVideoTexture(gl,texture.globject,video);
-                break;
+                    $("#"+whichSlot)
+                        .attr('src', 'presets/previz/webcam.png')
+                        .animate(
+                            {
+                                backgroundColor: "rgba(255, 255, 255, 0.5)",
+                            }, .250 );
+                    whichSlot = "";
+                    createVideoTexture(gl,texture.globject, mWebCam);
+                    break;
 
                 case "tex_audio":
                     if (mSound == null)
