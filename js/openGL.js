@@ -277,7 +277,7 @@ function destroyInput(id) {
         gl.deleteTexture(inp.globject);
     } else if (inp.type == "slideshow") {
         gl.deleteTexture(inp.globject);
-    } else if (inp.type == "webcam") {
+    } else if (inp.type == "tex_webcam") {
         gl.deleteTexture(inp.globject);
     } else if (inp.type == "video") {
         inp.video.pause();
@@ -420,6 +420,22 @@ function createKeyboardTexture(ctx, texture) {
     ctx.bindTexture(ctx.TEXTURE_2D, null);
 }
 
+function createVideoTexture(ctx, texture, video){
+    if (ctx == null) return;
+
+    ctx.bindTexture(ctx.TEXTURE_2D, texture);
+    ctx.pixelStorei(ctx.UNPACK_FLIP_Y_WEBGL, true);
+    ctx.pixelStorei(ctx.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
+    ctx.texImage2D(ctx.TEXTURE_2D, 0, ctx.RGBA, ctx.RGBA, ctx.UNSIGNED_BYTE, video);
+    ctx.texParameteri(ctx.TEXTURE_2D,ctx.TEXTURE_WRAP_S, ctx.CLAMP_TO_EDGE);
+    ctx.texParameteri(ctx.TEXTURE_2D,ctx.TEXTURE_WRAP_T, ctx.CLAMP_TO_EDGE);
+    ctx.texParameteri(ctx.TEXTURE_2D,ctx.TEXTURE_MIN_FILTER, ctx.LINEAR);
+    ctx.texParameteri(ctx.TEXTURE_2D,ctx.TEXTURE_MAG_FILTER, ctx.LINEAR);
+    ctx.bindTexture(ctx.TEXTURE_2D, null);
+
+}
+
+
 function resizeGLCanvas(width, height) {
     mCanvas.width = width / quality;
     mCanvas.height = height / quality;
@@ -552,6 +568,13 @@ function paint() {
             gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
             gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, 256, 2, gl.LUMINANCE, gl.UNSIGNED_BYTE, inp.mData);
             // }
+        } else if (inp.type == "tex_webcam"){
+            gl.bindTexture(gl.TEXTURE_2D, inp.globject);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, video);
+            gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+            gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
+
+
         }
     }
 
