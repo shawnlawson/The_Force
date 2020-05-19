@@ -603,17 +603,17 @@ $( document ).ready(function()
                     break;
 
                 case "tex_webcam":
-                    texture.type = "webcam";
+                    texture.type = "tex_webcam";
                     texture.globject =  gl.createTexture();
-                    $("#"+whichSlot)
+                $("#"+whichSlot)
+                    .attr('src', 'presets/previz/webcam.png')
                     .animate(
-                        {backgroundColor: "rgba(255, 255, 255, 0.5)",
-                    }, .250 );;
-                    whichSlot = "";
-                    
-                    createVideoTexture(gl,texture.globject,video);
-                    console.log("vidio inited" )
-                    break;
+                        {
+                            backgroundColor: "rgba(255, 255, 255, 0.5)",
+                        }, .250 );
+                whichSlot = "";
+                createVideoTexture(gl,texture.globject,video);
+                break;
 
                 case "tex_audio":
                     if (mSound == null)
@@ -1348,4 +1348,3 @@ var UiUpdater = function() {
         messageBox.appendChild(closeButton);
     };
 };
-

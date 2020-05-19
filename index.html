@@ -514,11 +514,9 @@ ft     = float
             alert('Your browser does not support getUserMedia. Try Chrome or Firefox instead')
             }
             function handleVideo(stream) {
-            var url = window.URL || window.webkitURL;
-            video.srcObject = stream;
-            //  video.src = url ? url.createObjectURL(stream) : stream;
+                var url = window.URL || window.webkitURL;
+                video.srcObject = stream;
                 video.play();
-                //video.src = window.URL.createObjectURL(stream);
                 videoLoaded = true;
                 $('#infoBox').fadeOut(1000);
             }
