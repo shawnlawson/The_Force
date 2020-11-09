@@ -689,11 +689,11 @@ $( document ).ready(function()
         textureSourceSlotImg.src = textureSource.previewImageSrc;
     };
 
-    function newTextureSourceFromFileContent(fileContent) {
+    function newTextureSourceFromFileContent(fileName, fileContent) {
         const newRandomName = Math.random().toString(36).substring(7);
         return {
             id: newRandomName,
-            name: newRandomName,
+            name: fileName,
             previewImageSrc: fileContent,
             createTexture: function() {
                 const texture = {
@@ -775,11 +775,12 @@ $( document ).ready(function()
     $('#uploadCustomTextureFile').change(function(event) {
         const fileList = Array.from(event.target.files);
         fileList.forEach(function(file) {
-            var reader = new FileReader();
-            
+            const reader = new FileReader();
+            const fileName = file.name;
+
             reader.onload = function() {
                 try {
-                    const newTextureSource = newTextureSourceFromFileContent(reader.result);
+                    const newTextureSource = newTextureSourceFromFileContent(fileName, reader.result);
                     loadTextureSource(newTextureSource);
                 } catch (e){
                     if (e instanceof CantAddMoreCustomTextureSourcesError) {
