@@ -785,6 +785,7 @@ $( document ).ready(function()
                 } catch (e){
                     if (e instanceof CantAddMoreCustomTextureSourcesError) {
                       $('#maxCustomTextureSourcesReachedMessage').show();
+                      $('#uploadCustomTexture').prop('disabled', true);
                     } else {
                         throw e;
                     }
