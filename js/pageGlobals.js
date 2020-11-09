@@ -19,6 +19,7 @@ var mTime;
 var whichSlot;
 var debugging = false;
 var numScreens = 1;
+const textureSources = {};
 
 //for ace editor
 var mCompileTimer = null;
@@ -563,7 +564,9 @@ $( document ).ready(function()
         });
 
     const tex_none = {
-        previewImageSrc: 'none',
+        id: "tex_none",
+        name: "no texture",
+        previewImageSrc: "presets/previz/void.png",
         createTexture: function() {
             return {
                 type: null,
@@ -572,7 +575,9 @@ $( document ).ready(function()
         },
     }
     const tex_keyboard = {
-        previewImageSrc: 'presets/previz/keyboard.png',                
+        id: "tex_keyboard",
+        name: "keyboard",
+        previewImageSrc: "presets/previz/keyboard.png",
         createTexture: function() {
             const textureMData = new Uint8Array(256 * 2);
             for (var j = 0; j < (256 * 2); j++)
@@ -583,14 +588,16 @@ $( document ).ready(function()
             createKeyboardTexture(gl, globject);
 
             return {
-                type: 'tex_keyboard',
+                type: "tex_keyboard",
                 mData: textureMData,
                 globject: globject,
             }
         }
     }
     const tex_webcam = {
-        previewImageSrc: 'presets/previz/webcam.png',
+        id: "tex_webcam",
+        name: "webcam",
+        previewImageSrc: "presets/previz/webcam.png",
         createTexture: function() {
             if (mWebCam === null)
                 mWebCam = document.getElementById( 'video' )
@@ -615,7 +622,9 @@ $( document ).ready(function()
         }
     }
     const tex_audio = {
-        previewImageSrc: 'presets/previz/audio.png',
+        id: "tex_audio",
+        name: "audio",
+        previewImageSrc: "presets/previz/audio.png",
         createTexture: function() {
             if (mSound == null)
                 initAudio();
@@ -637,7 +646,9 @@ $( document ).ready(function()
         }
     }
     const tex_noisebw = {
-        previewImageSrc: 'presets/previz/noisebw.png',
+        id: "tex_noisebw",
+        name: "noise bw",
+        previewImageSrc: "presets/previz/noisebw.png",
         createTexture: function() {
             const texture = {
                 type: "tex_2D",
@@ -655,7 +666,9 @@ $( document ).ready(function()
         }
     }
     const tex_noisecolor = {
-        previewImageSrc: 'presets/previz/noisecolor.png',
+        id: "tex_noisecolor",
+        name: "noise rgb",
+        previewImageSrc: "presets/previz/noisecolor.png",
         createTexture: function() {
             const texture = {
                 type: "tex_2D",
@@ -673,7 +686,9 @@ $( document ).ready(function()
         }
     }
     const tex_nyan = {
-        previewImageSrc: 'presets/previz/nyanIcon.png',
+        id: "tex_nyan",
+        name: "nyan animation",
+        previewImageSrc: "presets/previz/nyanIcon.png",
         createTexture: function() {
             const texture = {
                 type: "tex_2D",
@@ -690,16 +705,38 @@ $( document ).ready(function()
             return texture;
         }
     };
-    const defaultTextureSources = {
-        tex_none, tex_keyboard, tex_webcam, tex_audio, tex_noisebw, tex_noisecolor, tex_nyan
+
+    function nextFreeTextureSourceSlot() {
+        return Array.from(document.querySelectorAll('div.tRow > div.texCell'))
+                    .find(function(textureSlot){
+                        const img = textureSlot.querySelector('img');
+                        return img && ("" == img.id);
+                    })
     };
+
+    function loadTextureSource(textureSource) {
+        textureSources[textureSource.id] = textureSource;
+
+        const textureSourceSlot = nextFreeTextureSourceSlot();
+        const textureSourceSlotImg = textureSourceSlot.querySelector('img');
+
+        textureSourceSlot.title = textureSource.name;
+        textureSourceSlotImg.id = textureSource.id;
+        textureSourceSlotImg.src = textureSource.previewImageSrc;
+    };
+
+    const defaultTextureSources = [
+        tex_none, tex_keyboard, tex_webcam, tex_audio, tex_noisebw, tex_noisecolor, tex_nyan
+    ];
+
+    defaultTextureSources.forEach(loadTextureSource);
 
     $('.textureOption')
         .click( function(event)
         {
             var slotID = whichSlot.slice(-1);
             destroyInput(slotID);
-            const textureSource = defaultTextureSources[event.target.id];
+            const textureSource = textureSources[event.target.id];
 
             $("#"+whichSlot)
                 .attr('src', textureSource.previewImageSrc)
