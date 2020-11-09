@@ -666,6 +666,8 @@ $( document ).ready(function()
 
     // Functions to work with texture sources
 
+    class CantAddMoreCustomTextureSourcesError extends Error { name = 'CantAddMoreCustomTextureSourcesError'; }
+
     function nextFreeTextureSourceSlot() {
         return Array.from(document.querySelectorAll('div.tRow > div.texCell'))
                     .find(function(textureSlot){
@@ -678,6 +680,8 @@ $( document ).ready(function()
         textureSources[textureSource.id] = textureSource;
 
         const textureSourceSlot = nextFreeTextureSourceSlot();
+        if(!textureSourceSlot)
+            throw new CantAddMoreCustomTextureSourcesError();
         const textureSourceSlotImg = textureSourceSlot.querySelector('img');
 
         textureSourceSlot.title = textureSource.name;
@@ -774,8 +778,16 @@ $( document ).ready(function()
             var reader = new FileReader();
             
             reader.onload = function() {
-                const newTextureSource = newTextureSourceFromFileContent(reader.result);
-                loadTextureSource(newTextureSource);
+                try {
+                    const newTextureSource = newTextureSourceFromFileContent(reader.result);
+                    loadTextureSource(newTextureSource);
+                } catch (e){
+                    if (e instanceof CantAddMoreCustomTextureSourcesError) {
+                      $('#maxCustomTextureSourcesReachedMessage').show();
+                    } else {
+                        throw e;
+                    }
+                }
             };
 
             reader.readAsDataURL(file);
