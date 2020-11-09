@@ -731,6 +731,50 @@ $( document ).ready(function()
 
     defaultTextureSources.forEach(loadTextureSource);
 
+    $('#uploadCustomTexture')
+        .click( function(event)
+        {
+            $('#uploadCustomTextureFile').click();
+        })
+    $('#uploadCustomTextureFile').change(function(event) {
+        const fileList = Array.from(event.target.files);
+        fileList.forEach(function(file) {
+
+            var reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const newTextureSource = newTextureSourceFromFileContent(reader.result);
+                loadTextureSource(newTextureSource);
+            };
+
+            reader.readAsDataURL(file);
+        });
+    });
+
+    function newTextureSourceFromFileContent(fileContent) {
+        const newRandomName = Math.random().toString(36).substring(7);
+        return {
+            id: newRandomName,
+            name: newRandomName,
+            previewImageSrc: fileContent,
+            createTexture: function() {
+                const texture = {
+                    type: "tex_2D",
+                    globject: gl.createTexture(),
+                    image: new Image(),
+                    loaded: false,
+                };
+                texture.image.onload = function()
+                {
+                    createGLTextureNearest(gl, texture.image, texture.globject);
+                    texture.loaded = true;
+                }
+                texture.image.src = fileContent;
+                return texture;
+            }
+        };
+    }
+
     $('.textureOption')
         .click( function(event)
         {
