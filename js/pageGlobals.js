@@ -562,155 +562,154 @@ $( document ).ready(function()
             }
         });
 
+    const tex_none = {
+        previewImageSrc: 'none',
+        createTexture: function() {
+            return {
+                type: null,
+                globject: null,
+            }
+        },
+    }
+    const tex_keyboard = {
+        previewImageSrc: 'presets/previz/keyboard.png',                
+        createTexture: function() {
+            const textureMData = new Uint8Array(256 * 2);
+            for (var j = 0; j < (256 * 2); j++)
+            {
+                textureMData[j] = 0;
+            }
+            const globject = gl.createTexture()
+            createKeyboardTexture(gl, globject);
+
+            return {
+                type: 'tex_keyboard',
+                mData: textureMData,
+                globject: globject,
+            }
+        }
+    }
+    const tex_webcam = {
+        previewImageSrc: 'presets/previz/webcam.png',
+        createTexture: function() {
+            if (mWebCam === null)
+                mWebCam = document.getElementById( 'video' )
+
+            navigator.mediaDevices.getUserMedia({audio: false, video: true})
+                .then( function(stream) { //success
+                    mWebCam.srcObject = stream;
+                    mWebCam.play()
+                })
+                .catch( function(err) { //failure
+                    alert("Error getting user media stream." + err);
+                    mWebCam = null
+                });
+
+            const globject = gl.createTexture();
+            createVideoTexture(gl, globject, mWebCam);
+
+            return {
+                type: 'tex_webcam',
+                globject: globject,
+            }
+        }
+    }
+    const tex_audio = {
+        previewImageSrc: 'presets/previz/audio.png',
+        createTexture: function() {
+            if (mSound == null)
+                initAudio();
+
+            const textureMData = new Uint8Array(512 * 2);
+            for (var j = 0; j < (512 * 2); j++)
+            {
+                textureMData[j] = 0;
+            }
+
+            const globject = gl.createTexture();
+            createAudioTexture(gl, globject);
+
+            return {
+                type: "tex_audio",
+                globject: globject,
+                mData: textureMData,
+            }
+        }
+    }
+    const tex_noisebw = {
+        previewImageSrc: 'presets/previz/noisebw.png',
+        createTexture: function() {
+            const texture = {
+                type: "tex_2D",
+                globject: gl.createTexture(),
+                image: new Image(),
+                loaded: false,
+            };
+            texture.image.onload = function()
+            {
+                createGLTextureNearestRepeat( gl, texture.image, texture.globject);
+                texture.loaded = true;
+            }
+            texture.image.src = 'presets/noisebw.png';
+            return texture;
+        }
+    }
+    const tex_noisecolor = {
+        previewImageSrc: 'presets/previz/noisecolor.png',
+        createTexture: function() {
+            const texture = {
+                type: "tex_2D",
+                globject: gl.createTexture(),
+                image: new Image(),
+                loaded: false,
+            };
+            texture.image.onload = function()
+            {
+                createGLTextureNearestRepeat( gl, texture.image, texture.globject);
+                texture.loaded = true;
+            }
+            texture.image.src = 'presets/noisecolor.png';
+            return texture;
+        }
+    }
+    const tex_nyan = {
+        previewImageSrc: 'presets/previz/nyanIcon.png',
+        createTexture: function() {
+            const texture = {
+                type: "tex_2D",
+                globject: gl.createTexture(),
+                image: new Image(),
+                loaded: false,
+            };
+            texture.image.onload = function()
+            {
+                createGLTextureNearest(gl, texture.image, texture.globject);
+                texture.loaded = true;
+            }
+            texture.image.src = 'presets/nyan.png';
+            return texture;
+        }
+    };
+    const defaultTextureSources = {
+        tex_none, tex_keyboard, tex_webcam, tex_audio, tex_noisebw, tex_noisecolor, tex_nyan
+    };
+
     $('.textureOption')
         .click( function(event)
         {
             var slotID = whichSlot.slice(-1);
             destroyInput(slotID);
-            var texture = {};
+            const textureSource = defaultTextureSources[event.target.id];
 
-            switch (event.target.id)
-            {
-                case "tex_none":
-                    texture.type = null;
-                    texture.globject = null;
-                    $("#"+whichSlot)
-                        .attr('src', 'none')
-                        .animate(
-                            {
-                                backgroundColor: "rgba(255, 255, 255, 0.5)",
-                            }, .250 );;
-                    whichSlot = "";
-                    break;
-
-                case "tex_keyboard":
-                    texture.type = "tex_keyboard"
-                    texture.globject =  gl.createTexture();
-                    $("#"+whichSlot)
-                        .attr('src', 'presets/previz/keyboard.png')
-                        .animate(
-                        {
-                            backgroundColor: "rgba(255, 255, 255, 0.5)",
-                        }, .250 );
-                    whichSlot = "";
-
-                    texture.mData = new Uint8Array(256 * 2);
-                    for (var j = 0; j < (256 * 2); j++)
+            $("#"+whichSlot)
+                .attr('src', textureSource.previewImageSrc)
+                .animate(
                     {
-                        texture.mData[j] = 0;
-                    }
-
-                    createKeyboardTexture( gl, texture.globject);
-                    break;
-
-                case "tex_webcam":
-                    if (mWebCam === null)
-                        mWebCam = document.getElementById( 'video' )
-
-                    navigator.mediaDevices.getUserMedia({audio: false, video: true})
-                        .then( function(stream) { //success
-                            mWebCam.srcObject = stream;
-                            mWebCam.play()
-                        })
-                        .catch( function(err) { //failure
-                            alert("Error getting user media stream." + err);
-                            mWebCam = null
-                        });
-
-                    texture.type = "tex_webcam";
-                    texture.globject =  gl.createTexture();
-                    $("#"+whichSlot)
-                        .attr('src', 'presets/previz/webcam.png')
-                        .animate(
-                            {
-                                backgroundColor: "rgba(255, 255, 255, 0.5)",
-                            }, .250 );
-                    whichSlot = "";
-                    createVideoTexture(gl,texture.globject, mWebCam);
-                    break;
-
-                case "tex_audio":
-                    if (mSound == null)
-                        initAudio();
-                    texture.type = "tex_audio";
-                    texture.globject =  gl.createTexture();
-                    $("#"+whichSlot)
-                        .attr('src', 'presets/previz/audio.png')
-                        .animate(
-                        {
-                            backgroundColor: "rgba(255, 255, 255, 0.5)",
-                        }, .250 );
-                    whichSlot = "";
-
-                    texture.mData = new Uint8Array(512 * 2);
-                    for (var j = 0; j < (512 * 2); j++)
-                    {
-                        texture.mData[j] = 0;
-                    }
-                    createAudioTexture( gl, texture.globject);
-                    break;
-
-                case "tex_noisebw":
-                    texture.type = "tex_2D";
-                    texture.globject =  gl.createTexture();
-                    texture.image = new Image();
-                    texture.loaded = false;
-                    $("#"+whichSlot)
-                        .attr('src', 'presets/previz/noisebw.png')
-                        .animate(
-                        {
-                            backgroundColor: "rgba(255, 255, 255, 0.5)",
-                        }, .250 );
-                    whichSlot = "";
-
-                    texture.image.onload = function()
-                    {
-                        createGLTextureNearestRepeat( gl, texture.image, texture.globject);
-                        texture.loaded = true;
-                    }
-                    texture.image.src = 'presets/noisebw.png';
-                    break;
-
-                case "tex_noisecolor":
-                    texture.type = "tex_2D";
-                    texture.globject =  gl.createTexture();
-                    texture.image = new Image();
-                    texture.loaded = false;
-                    $("#"+whichSlot)
-                        .attr('src', 'presets/previz/noisecolor.png')
-                        .animate(
-                        {
-                            backgroundColor: "rgba(255, 255, 255, 0.5)",
-                        }, .250 );
-                    whichSlot = "";
-
-                    texture.image.onload = function()
-                    {
-                        createGLTextureNearestRepeat( gl, texture.image, texture.globject);
-                        texture.loaded = true;
-                    }
-                    texture.image.src = 'presets/noisecolor.png';
-                    break;
-
-                case "tex_nyan":
-                    texture.type = "tex_2D";
-                    texture.globject = gl.createTexture();
-                    texture.image = new Image();
-                    texture.loaded = false;
-                    $("#"+whichSlot)
-                        .attr('src', 'presets/previz/nyanIcon.png')
-                        .animate(
-                            {
-                                backgroundColor: "rgba(255, 255, 255, 0.5)",
-                            }, .250 );
-                    whichSlot = "";
-                    texture.image.onload = function()
-                    {
-                        createGLTextureNearest(gl, texture.image, texture.globject);
-                        texture.loaded = true;
-                    }
-                    texture.image.src = 'presets/nyan.png';
-            }
+                        backgroundColor: "rgba(255, 255, 255, 0.5)",
+                    }, .250 );
+            whichSlot = ""
+            
+            const texture = textureSource.createTexture();
 
             mInputs[slotID] = texture;
             createInputStr();
