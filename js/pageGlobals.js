@@ -510,58 +510,12 @@ $( document ).ready(function()
     }
 
     //--------------------- TEXTURE PANEL ------------
-    $("#texturePanel")
-        .dialog({
-            autoOpen: false,
-            minWidth: 380,
-            show: {
-                effect: "clip",
-                duration: 250
-            },
-            hide: {
-                effect: "clip",
-                duration: 250
-            },
-            open: function(){
-                //fixes highlight close button
-                $(this).parents('.ui-dialog').attr('tabindex', -1)[0].focus();
-            }
-        });
 
-    $('.textureSlot')
-        .click( function(event)
-        {
-            $( ".textureSlot" ).animate(
-                {
-                    backgroundColor: "rgba(255, 255, 255, 0.5)",
-                }, .250 );
-            $(this).animate(
-                {
-                    backgroundColor: "rgba(0, 255, 0, 0.4)",
-                }, .250 );
-            whichSlot = event.target.id;
-        })
-        .hover( function(event)
-        {
-            $(this).animate(
-                {
-                    backgroundColor: "rgba(255, 255, 255, 1.0)",
-                }, .250 );
+    // A texture source is an element that can provide a texture
+    // It should have an id, a name and a previewImageSrc that are used to render the slot in the texture panel
+    // Also, it needs to have a createTexture() function that returns a texture
 
-        }, function(event)
-        {
-            $(this).animate(
-                {
-                    backgroundColor: "rgba(255, 255, 255, 0.5)",
-                }, .250 );
-            if (whichSlot == event.target.id)
-            {
-                $(this).animate(
-                {
-                    backgroundColor: "rgba(0, 255, 0, 0.4)",
-                }, .250 );
-            }
-        });
+    // Default texture sources
 
     const tex_none = {
         id: "tex_none",
@@ -706,6 +660,12 @@ $( document ).ready(function()
         }
     };
 
+    const defaultTextureSources = [
+        tex_none, tex_keyboard, tex_webcam, tex_audio, tex_noisebw, tex_noisecolor, tex_nyan
+    ];
+
+    // Functions to work with texture sources
+
     function nextFreeTextureSourceSlot() {
         return Array.from(document.querySelectorAll('div.tRow > div.texCell'))
                     .find(function(textureSlot){
@@ -724,32 +684,6 @@ $( document ).ready(function()
         textureSourceSlotImg.id = textureSource.id;
         textureSourceSlotImg.src = textureSource.previewImageSrc;
     };
-
-    const defaultTextureSources = [
-        tex_none, tex_keyboard, tex_webcam, tex_audio, tex_noisebw, tex_noisecolor, tex_nyan
-    ];
-
-    defaultTextureSources.forEach(loadTextureSource);
-
-    $('#uploadCustomTexture')
-        .click( function(event)
-        {
-            $('#uploadCustomTextureFile').click();
-        })
-    $('#uploadCustomTextureFile').change(function(event) {
-        const fileList = Array.from(event.target.files);
-        fileList.forEach(function(file) {
-
-            var reader = new FileReader();
-            
-            reader.onload = function(e) {
-                const newTextureSource = newTextureSourceFromFileContent(reader.result);
-                loadTextureSource(newTextureSource);
-            };
-
-            reader.readAsDataURL(file);
-        });
-    });
 
     function newTextureSourceFromFileContent(fileContent) {
         const newRandomName = Math.random().toString(36).substring(7);
@@ -774,6 +708,79 @@ $( document ).ready(function()
             }
         };
     }
+
+    $("#texturePanel")
+        .dialog({
+            autoOpen: false,
+            minWidth: 380,
+            show: {
+                effect: "clip",
+                duration: 250
+            },
+            hide: {
+                effect: "clip",
+                duration: 250
+            },
+            open: function(){
+                //fixes highlight close button
+                $(this).parents('.ui-dialog').attr('tabindex', -1)[0].focus();
+            }
+        });
+
+    $('.textureSlot')
+        .click( function(event)
+        {
+            $( ".textureSlot" ).animate(
+                {
+                    backgroundColor: "rgba(255, 255, 255, 0.5)",
+                }, .250 );
+            $(this).animate(
+                {
+                    backgroundColor: "rgba(0, 255, 0, 0.4)",
+                }, .250 );
+            whichSlot = event.target.id;
+        })
+        .hover( function(event)
+        {
+            $(this).animate(
+                {
+                    backgroundColor: "rgba(255, 255, 255, 1.0)",
+                }, .250 );
+
+        }, function(event)
+        {
+            $(this).animate(
+                {
+                    backgroundColor: "rgba(255, 255, 255, 0.5)",
+                }, .250 );
+            if (whichSlot == event.target.id)
+            {
+                $(this).animate(
+                {
+                    backgroundColor: "rgba(0, 255, 0, 0.4)",
+                }, .250 );
+            }
+        });
+
+    $('#uploadCustomTexture')
+        .click( function()
+        {
+            $('#uploadCustomTextureFile').click();
+        });
+
+    $('#uploadCustomTextureFile').change(function(event) {
+        const fileList = Array.from(event.target.files);
+        fileList.forEach(function(file) {
+            var reader = new FileReader();
+            
+            reader.onload = function() {
+                const newTextureSource = newTextureSourceFromFileContent(reader.result);
+                loadTextureSource(newTextureSource);
+            };
+
+            reader.readAsDataURL(file);
+        });
+    });
 
     $('.textureOption')
         .click( function(event)
@@ -809,6 +816,8 @@ $( document ).ready(function()
                     backgroundColor: "rgba(255, 255, 255, 0.25)",
                 }, .250 );
         });
+
+    defaultTextureSources.forEach(loadTextureSource);
 
     //--------------------- PROJECTION MAPPING PANEL ------------
     $("#edgesPanel")
