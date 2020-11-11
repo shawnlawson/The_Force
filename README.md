@@ -26,8 +26,6 @@ If you're looking for which functions are built-in, then give the wiki [API](htt
 - fix popup menu styling
 - fill in more help window
 - DnD into text editor window
-- more 2D textures
-- video input
 - cubemap input
 
 
