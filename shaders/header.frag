@@ -15,7 +15,7 @@ float PI2 = 6.28318;
 
 vec3 black = vec3(0.0);
 vec3 white = vec3(1.0);
-vec3 red = vec3(0.86,0.22,0.27);   
+vec3 red = vec3(0.86,0.22,0.27);
 vec3 orange = vec3(0.92,0.49,0.07);
 vec3 yellow = vec3(0.91,0.89,0.26);
 vec3 green = vec3(0.0,0.71,0.31);
@@ -28,7 +28,7 @@ vec3 magenta = vec3(1.0, 0.189, 0.745);
 vec3 brown = vec3(0.96, 0.474, 0.227);
 
 vec2 uvN(){return (gl_FragCoord.xy / resolution);}
-vec2 uv(){return (gl_FragCoord.xy / resolution * 2.0 -1.0) * vec2(resolution.x/resolution.y, 1.0);}  
+vec2 uv(){return (gl_FragCoord.xy / resolution * 2.0 -1.0) * vec2(resolution.x/resolution.y, 1.0);}
 
 float kale(vec2 p, float n) {
   return abs(mod(atan(p.x, p.y), n) - n * .5);
@@ -62,7 +62,7 @@ vec2 rhash(vec2 uv) {
     return  fract(fract(uv/mys)*uv);
 }
 vec3 hash( vec3 p ){
-    return fract(sin(vec3( dot(p,vec3(1.0,57.0,113.0)), 
+    return fract(sin(vec3( dot(p,vec3(1.0,57.0,113.0)),
                            dot(p,vec3(57.0,113.0,1.0)),
                            dot(p,vec3(113.0,1.0,57.0))))*43758.5453);
 
@@ -133,7 +133,7 @@ float snoise(vec2 v){
 
 const vec2  CC = vec2(1.0/6.0, 1.0/3.0) ;
 const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);
-float snoise(vec3 v){ 
+float snoise(vec3 v){
 
   vec3 i  = floor(v + dot(v, CC.yyy) );
   vec3 x0 =   v - i + dot(i, CC.xxx) ;
@@ -144,10 +144,10 @@ float snoise(vec3 v){
   vec3 x1 = x0 - i1 + 1.0 * CC.xxx;
   vec3 x2 = x0 - i2 + 2.0 * CC.xxx;
   vec3 x3 = x0 - 1. + 3.0 * CC.xxx;
-  i = mod(i, 289.0 ); 
-  vec4 p = permute( permute( permute( 
+  i = mod(i, 289.0 );
+  vec4 p = permute( permute( permute(
              i.z + vec4(0.0, i1.z, i2.z, 1.0 ))
-           + i.y + vec4(0.0, i1.y, i2.y, 1.0 )) 
+           + i.y + vec4(0.0, i1.y, i2.y, 1.0 ))
            + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));
   float n_ = 1.0/7.0; // N=7
   vec3  ns = n_ * D.wyz - D.xzx;
@@ -183,7 +183,7 @@ float snoise(vec3 v){
 
   vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
   m = m * m;
-  return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1), 
+  return 42.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1),
                                 dot(p2,x2), dot(p3,x3) ) );
 }
 
@@ -286,7 +286,7 @@ float rmf(vec2 uv, const in int it) {
     for(int i = 0; i < 32; i++) {
         if(i<it) {
             uv = uv.yx * l;
-            float n = noise(uv);     
+            float n = noise(uv);
             n = abs(fract(n-.5)-.5);
             n *= n * a;
             a = clamp(0.,1., n*2.);
@@ -321,7 +321,7 @@ float vrmf(vec2 uv, const in int it) {
     for(int i = 0; i < 32; i++) {
         if(i<it) {
             uv = uv.yx * l;
-            float n = voronoi(uv);     
+            float n = voronoi(uv);
             n = abs(fract(n-.5)-.5);
             n *= n * a;
             a = clamp(0.,1., n*2.);

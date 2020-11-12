@@ -1,0 +1,63 @@
+var customWordCompleter = {
+    getCompletions: function(editor, session, pos, prefix, callback) {
+        var wordList = [
+            {"w":"black", "t":"vec3" },
+            {"w":"white", "t":"vec3"},
+            {"w":"red", "t":"vec3"},
+            {"w":"orange", "t":"vec3"},
+            {"w":"yellow", "t":"vec3"},
+            {"w":"green", "t":"vec3"},
+            {"w":"blue", "t":"vec3"},
+            {"w":"purple", "t":"vec3"},
+            {"w":"pink", "t":"vec3"},
+            {"w":"lime", "t":"vec3"},
+            {"w":"teal", "t":"vec3"},
+            {"w":"PI", "t":"float"},
+            {"w":"PI2", "t":"float"},
+            {"w":"float", "t":"storage"},
+            {"w":"int", "t":"storage"},
+            {"w":"bool", "t":"storage"},
+            {"w":"mat2", "t":"storage"},
+            {"w":"mat3", "t":"storage"},
+            {"w":"mat4", "t":"storage"},
+            {"w":"vec2", "t":"storage"},
+            {"w":"vec3", "t":"storage"},
+            {"w":"vec4", "t":"storage"},
+            {"w":"break", "t":"keyword"},
+            {"w":"continue", "t":"keyword"},
+            {"w":"do", "t":"keyword"},
+            // {"w":"for", "t":"keyword"},
+            {"w":"while", "t":"keyword"},
+            {"w":"if", "t":"keyword"},
+            {"w":"else", "t":"keyword"},
+            {"w":"discard", "t":"keyword"},
+            {"w":"return", "t":"keyword"},
+            {"w":"struct", "t":"keyword"},
+            {"w":"void", "t":"keyword"},
+            {"w":"resolution", "t":"vec2"},
+            {"w":"time", "t":"float"},
+            // {"w":"channelTime", "t":"float[]"},
+            {"w":"mouse", "t":"vec4"},
+            {"w":"date", "t":"vec4"},
+            // {"w":"channelResolution", "t":"vec3[]"},
+            {"w":"bands", "t":"vec4"},
+            {"w":"backbuffer", "t":"texture"},
+            {"w":"channel0", "t":"texture"},
+            {"w":"channel1", "t":"texture"},
+            {"w":"channel2", "t":"texture"},
+            {"w":"channel3", "t":"texture"},
+            {"w":"gl_Position", "t":"vec4"},
+            {"w":"gl_FragCoord", "t":"vec4"},
+            {"w":"gl_FragColor", "t":"vec4"},
+            {"w":"uv()", "t":"vec2"},
+            {"w":"uvN()", "t":"vec2"},
+            ];
+        callback(null, wordList.map(function(ea) {
+            return {
+                caption: ea.w,
+                value: ea.w,
+                meta: ea.t
+            };
+        }));
+    }
+}

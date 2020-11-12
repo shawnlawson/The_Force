@@ -810,7 +810,7 @@ $( document ).ready(function()
                         backgroundColor: "rgba(255, 255, 255, 0.5)",
                     }, .250 );
             whichSlot = ""
-            
+
             const texture = textureSource.createTexture();
 
             mInputs[slotID] = texture;
@@ -1088,7 +1088,7 @@ $( document ).ready(function()
 
     // --- ace editor ---------------------
     var langTools = ace.require("ace/ext/language_tools");
-    langTools.setCompleters([langTools.snippetCompleter, langTools.keyWordCompleter])
+    langTools.setCompleters([langTools.snippetCompleter, customWordCompleter]);//, langTools.keyWordCompleter])
     editor = ace.edit("editor");
     editor.session.setMode("ace/mode/glsl");
     editor.getSession().setUseWrapMode(true);
