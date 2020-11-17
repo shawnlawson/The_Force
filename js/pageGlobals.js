@@ -676,6 +676,23 @@ $( document ).ready(function()
                     })
     };
 
+    function removeTextureSourceButtonFor(textureSourceSlot) {
+        const removeTextureButton = document.createElement("img");
+        removeTextureButton.setAttribute("src", "presets/previz/void.png");
+        removeTextureButton.classList.add("textureOption", "texClose");
+
+        $(removeTextureButton).click(function() {
+            const textureSourceSlotImg = textureSourceSlot.querySelector('img');
+
+            textureSourceSlot.title = ""
+            textureSourceSlotImg.id = ""
+            textureSourceSlotImg.src = ""
+            textureSourceSlot.removeChild(removeTextureButton);
+        });
+
+        return removeTextureButton;
+    }
+
     function loadTextureSource(textureSource) {
         textureSources[textureSource.id] = textureSource;
 
@@ -687,6 +704,9 @@ $( document ).ready(function()
         textureSourceSlot.title = textureSource.name;
         textureSourceSlotImg.id = textureSource.id;
         textureSourceSlotImg.src = textureSource.previewImageSrc;
+
+        const removeTextureSourceButton = removeTextureSourceButtonFor(textureSourceSlot);
+        textureSourceSlot.appendChild(removeTextureSourceButton); 
     };
 
     function newTextureSourceFromFileContent(fileName, fileContent) {

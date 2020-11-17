@@ -85,9 +85,23 @@ body, html {
     height: auto;
 }
 
+.texClose.textureOption {
+    width: 15px;
+    height: 15px;
+    right: -7px;
+    top: -7px;
+    position: absolute;
+    z-index: 100;
+}
+
+.texClose.textureOption:hover {
+    background-color: rgb(255, 255, 255);
+}
+
 .texCell{
     display: table-cell;
     width: 60px;
+    position: relative;
 }
 .texCell > p{
     padding-left: 5px;
