@@ -669,11 +669,16 @@ $( document ).ready(function()
     class CantAddMoreCustomTextureSourcesError extends Error { name = 'CantAddMoreCustomTextureSourcesError'; }
 
     function nextFreeTextureSourceSlot() {
-        return Array.from(document.querySelectorAll('div.tRow > div.texCell'))
+        const nextFreeSlot = Array.from(document.querySelectorAll('div.tRow > div.texCell'))
                     .find(function(textureSlot){
                         const img = textureSlot.querySelector('img');
                         return img && ("" == img.id);
-                    })
+                    });
+
+        if(!nextFreeSlot)
+            throw new CantAddMoreCustomTextureSourcesError();
+        
+        return nextFreeSlot;
     };
 
     function removeTextureSourceButtonFor(textureSourceSlot) {
@@ -682,28 +687,25 @@ $( document ).ready(function()
         removeTextureButton.classList.add("textureOption", "texClose");
 
         $(removeTextureButton).click(function() {
-            const textureSourceSlotImg = textureSourceSlot.querySelector('img');
-
-            textureSourceSlot.title = ""
-            textureSourceSlotImg.id = ""
-            textureSourceSlotImg.src = ""
+            fillTextureSlotWith(textureSourceSlot, { name: "", id: "", previewImageSrc: "" });
             textureSourceSlot.removeChild(removeTextureButton);
         });
 
         return removeTextureButton;
     }
 
+    function fillTextureSlotWith(textureSourceSlot, {name, id, previewImageSrc}) {
+        textureSourceSlot.title = name;
+        const textureSourceSlotImg = textureSourceSlot.querySelector('img');
+        textureSourceSlotImg.id = id;
+        textureSourceSlotImg.src = previewImageSrc;
+    }
+
     function loadTextureSource(textureSource) {
         textureSources[textureSource.id] = textureSource;
 
         const textureSourceSlot = nextFreeTextureSourceSlot();
-        if(!textureSourceSlot)
-            throw new CantAddMoreCustomTextureSourcesError();
-        const textureSourceSlotImg = textureSourceSlot.querySelector('img');
-
-        textureSourceSlot.title = textureSource.name;
-        textureSourceSlotImg.id = textureSource.id;
-        textureSourceSlotImg.src = textureSource.previewImageSrc;
+        fillTextureSlotWith(textureSourceSlot, textureSource);
 
         const removeTextureSourceButton = removeTextureSourceButtonFor(textureSourceSlot);
         textureSourceSlot.appendChild(removeTextureSourceButton); 
