@@ -669,16 +669,7 @@ $( document ).ready(function()
     class CantAddMoreCustomTextureSourcesError extends Error { name = 'CantAddMoreCustomTextureSourcesError'; }
 
     function nextFreeTextureSourceSlot() {
-        const nextFreeSlot = Array.from(document.querySelectorAll('div.tRow > div.texCell'))
-                    .find(function(textureSlot){
-                        const img = textureSlot.querySelector('img');
-                        return img && ("" == img.id);
-                    });
-
-        if(!nextFreeSlot)
-            throw new CantAddMoreCustomTextureSourcesError();
-        
-        return nextFreeSlot;
+        return document.querySelector('[data-has-texture=false]');
     };
 
     function removeTextureSourceButtonFor(textureSourceSlot) {
@@ -687,28 +678,46 @@ $( document ).ready(function()
         removeTextureButton.classList.add("textureOption", "texClose");
 
         $(removeTextureButton).click(function() {
-            fillTextureSlotWith(textureSourceSlot, { name: "", id: "", previewImageSrc: "" });
-            textureSourceSlot.removeChild(removeTextureButton);
+            emptyTextureSlot(textureSourceSlot);
         });
 
         return removeTextureButton;
     }
 
-    function fillTextureSlotWith(textureSourceSlot, {name, id, previewImageSrc}) {
-        textureSourceSlot.title = name;
+    function emptyTextureSlot(textureSourceSlot) {
+        textureSourceSlot.title = "";
+
         const textureSourceSlotImg = textureSourceSlot.querySelector('img');
-        textureSourceSlotImg.id = id;
-        textureSourceSlotImg.src = previewImageSrc;
-    }
+        textureSourceSlotImg.id = "";
+        textureSourceSlotImg.src = "";
 
-    function loadTextureSource(textureSource) {
-        textureSources[textureSource.id] = textureSource;
+        const removeTextureButton = textureSourceSlot.querySelector('.texClose');
+        textureSourceSlot.removeChild(removeTextureButton);
 
-        const textureSourceSlot = nextFreeTextureSourceSlot();
-        fillTextureSlotWith(textureSourceSlot, textureSource);
+        textureSourceSlot.setAttribute('data-has-texture', false);
+    };
+
+    function fillTextureSlotWith(textureSourceSlot, textureSource) {
+        textureSourceSlot.title = textureSource.name;
+
+        const textureSourceSlotImg = textureSourceSlot.querySelector('img');
+        textureSourceSlotImg.id = textureSource.id;
+        textureSourceSlotImg.src = textureSource.previewImageSrc;
 
         const removeTextureSourceButton = removeTextureSourceButtonFor(textureSourceSlot);
-        textureSourceSlot.appendChild(removeTextureSourceButton); 
+        textureSourceSlot.appendChild(removeTextureSourceButton);
+
+        textureSourceSlot.setAttribute('data-has-texture', true);
+    };
+
+    function loadTextureSource(textureSource) {
+        const textureSourceSlot = nextFreeTextureSourceSlot();
+        if(!textureSourceSlot)
+            throw new CantAddMoreCustomTextureSourcesError();
+
+        fillTextureSlotWith(textureSourceSlot, textureSource);
+
+        textureSources[textureSource.id] = textureSource;
     };
 
     function newTextureSourceFromFileContent(fileName, fileContent) {
@@ -733,7 +742,38 @@ $( document ).ready(function()
                 return texture;
             }
         };
+    };
+
+    function disableCustomTexturesUpload() {
+        $('#maxCustomTextureSourcesReachedMessage').show();
+        $('#uploadCustomTexture').prop('disabled', true);
+    };
+
+    function enableCustomTexturesUpload() {
+        $('#maxCustomTextureSourcesReachedMessage').hide();
+        $('#uploadCustomTexture').prop('disabled', false);
+    };
+
+    function reloadCustomTexturesUpload() {
+        const isThereAnyFreeTextureSlot = !!nextFreeTextureSourceSlot();
+        if(isThereAnyFreeTextureSlot) {
+            enableCustomTexturesUpload();
+        } else {
+            disableCustomTexturesUpload();
+        }
     }
+
+    function reloadCustomTexturesUploadOnChangesToTextureSourceSlots() {
+        const observer = new MutationObserver(function(mutations) {
+            reloadCustomTexturesUpload();
+        });
+        var config = { attributeFilter: ["data-has-texture"] };
+        document.querySelectorAll('[data-has-texture]').forEach(function(textureSourceSlot) {
+            observer.observe(textureSourceSlot, config);
+        });   
+    };
+
+    reloadCustomTexturesUploadOnChangesToTextureSourceSlots();
 
     $("#texturePanel")
         .dialog({
