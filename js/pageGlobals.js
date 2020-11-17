@@ -521,6 +521,7 @@ $( document ).ready(function()
         id: "tex_none",
         name: "no texture",
         previewImageSrc: "presets/previz/void.png",
+        removable: false,
         createTexture: function() {
             return {
                 type: null,
@@ -532,6 +533,7 @@ $( document ).ready(function()
         id: "tex_keyboard",
         name: "keyboard",
         previewImageSrc: "presets/previz/keyboard.png",
+        removable: false,
         createTexture: function() {
             const textureMData = new Uint8Array(256 * 2);
             for (var j = 0; j < (256 * 2); j++)
@@ -552,6 +554,7 @@ $( document ).ready(function()
         id: "tex_webcam",
         name: "webcam",
         previewImageSrc: "presets/previz/webcam.png",
+        removable: false,
         createTexture: function() {
             if (mWebCam === null)
                 mWebCam = document.getElementById( 'video' )
@@ -579,6 +582,7 @@ $( document ).ready(function()
         id: "tex_audio",
         name: "audio",
         previewImageSrc: "presets/previz/audio.png",
+        removable: false,
         createTexture: function() {
             if (mSound == null)
                 initAudio();
@@ -603,6 +607,7 @@ $( document ).ready(function()
         id: "tex_noisebw",
         name: "noise bw",
         previewImageSrc: "presets/previz/noisebw.png",
+        removable: true,
         createTexture: function() {
             const texture = {
                 type: "tex_2D",
@@ -623,6 +628,7 @@ $( document ).ready(function()
         id: "tex_noisecolor",
         name: "noise rgb",
         previewImageSrc: "presets/previz/noisecolor.png",
+        removable: true,
         createTexture: function() {
             const texture = {
                 type: "tex_2D",
@@ -643,6 +649,7 @@ $( document ).ready(function()
         id: "tex_nyan",
         name: "nyan animation",
         previewImageSrc: "presets/previz/nyanIcon.png",
+        removable: true,
         createTexture: function() {
             const texture = {
                 type: "tex_2D",
@@ -692,7 +699,8 @@ $( document ).ready(function()
         textureSourceSlotImg.src = "";
 
         const removeTextureButton = textureSourceSlot.querySelector('.texClose');
-        textureSourceSlot.removeChild(removeTextureButton);
+        if(removeTextureButton)
+            textureSourceSlot.removeChild(removeTextureButton);
 
         textureSourceSlot.setAttribute('data-has-texture', false);
     };
@@ -704,8 +712,10 @@ $( document ).ready(function()
         textureSourceSlotImg.id = textureSource.id;
         textureSourceSlotImg.src = textureSource.previewImageSrc;
 
-        const removeTextureSourceButton = removeTextureSourceButtonFor(textureSourceSlot);
-        textureSourceSlot.appendChild(removeTextureSourceButton);
+        if(textureSource.removable) {
+            const removeTextureSourceButton = removeTextureSourceButtonFor(textureSourceSlot);
+            textureSourceSlot.appendChild(removeTextureSourceButton);
+        };
 
         textureSourceSlot.setAttribute('data-has-texture', true);
     };
@@ -726,6 +736,7 @@ $( document ).ready(function()
             id: newRandomName,
             name: fileName,
             previewImageSrc: fileContent,
+            removable: true,
             createTexture: function() {
                 const texture = {
                     type: "tex_2D",
