@@ -806,8 +806,7 @@ $( document ).ready(function()
                     loadTextureSource(newTextureSource);
                 } catch (e){
                     if (e instanceof CantAddMoreCustomTextureSourcesError) {
-                      $('#maxCustomTextureSourcesReachedMessage').show();
-                      $('#uploadCustomTexture').prop('disabled', true);
+                        console.warn(`Texture ${fileName} could not be uploaded because the texture panel is full.`);
                     } else {
                         throw e;
                     }
