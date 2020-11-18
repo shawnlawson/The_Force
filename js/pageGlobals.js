@@ -521,6 +521,7 @@ $( document ).ready(function()
         id: "tex_none",
         name: "no texture",
         previewImageSrc: "presets/previz/void.png",
+        removable: false,
         createTexture: function() {
             return {
                 type: null,
@@ -532,6 +533,7 @@ $( document ).ready(function()
         id: "tex_keyboard",
         name: "keyboard",
         previewImageSrc: "presets/previz/keyboard.png",
+        removable: false,
         createTexture: function() {
             const textureMData = new Uint8Array(256 * 2);
             for (var j = 0; j < (256 * 2); j++)
@@ -552,6 +554,7 @@ $( document ).ready(function()
         id: "tex_webcam",
         name: "webcam",
         previewImageSrc: "presets/previz/webcam.png",
+        removable: false,
         createTexture: function() {
             if (mWebCam === null)
                 mWebCam = document.getElementById( 'video' )
@@ -579,6 +582,7 @@ $( document ).ready(function()
         id: "tex_audio",
         name: "audio",
         previewImageSrc: "presets/previz/audio.png",
+        removable: false,
         createTexture: function() {
             if (mSound == null)
                 initAudio();
@@ -603,6 +607,7 @@ $( document ).ready(function()
         id: "tex_noisebw",
         name: "noise bw",
         previewImageSrc: "presets/previz/noisebw.png",
+        removable: true,
         createTexture: function() {
             const texture = {
                 type: "tex_2D",
@@ -623,6 +628,7 @@ $( document ).ready(function()
         id: "tex_noisecolor",
         name: "noise rgb",
         previewImageSrc: "presets/previz/noisecolor.png",
+        removable: true,
         createTexture: function() {
             const texture = {
                 type: "tex_2D",
@@ -643,6 +649,7 @@ $( document ).ready(function()
         id: "tex_nyan",
         name: "nyan animation",
         previewImageSrc: "presets/previz/nyanIcon.png",
+        removable: true,
         createTexture: function() {
             const texture = {
                 type: "tex_2D",
@@ -669,24 +676,58 @@ $( document ).ready(function()
     class CantAddMoreCustomTextureSourcesError extends Error { name = 'CantAddMoreCustomTextureSourcesError'; }
 
     function nextFreeTextureSourceSlot() {
-        return Array.from(document.querySelectorAll('div.tRow > div.texCell'))
-                    .find(function(textureSlot){
-                        const img = textureSlot.querySelector('img');
-                        return img && ("" == img.id);
-                    })
+        return document.querySelector('[data-has-texture=false]');
+    };
+
+    function removeTextureSourceButtonFor(textureSourceSlot) {
+        const removeTextureButton = document.createElement("img");
+        removeTextureButton.setAttribute("src", "presets/previz/void.png");
+        removeTextureButton.classList.add("textureOption", "texClose");
+
+        $(removeTextureButton).click(function() {
+            emptyTextureSlot(textureSourceSlot);
+        });
+
+        return removeTextureButton;
+    }
+
+    function emptyTextureSlot(textureSourceSlot) {
+        textureSourceSlot.title = "";
+
+        const textureSourceSlotImg = textureSourceSlot.querySelector('img');
+        textureSourceSlotImg.id = "";
+        textureSourceSlotImg.src = "";
+
+        const removeTextureButton = textureSourceSlot.querySelector('.texClose');
+        if(removeTextureButton)
+            textureSourceSlot.removeChild(removeTextureButton);
+
+        textureSourceSlot.setAttribute('data-has-texture', false);
+    };
+
+    function fillTextureSlotWith(textureSourceSlot, textureSource) {
+        textureSourceSlot.title = textureSource.name;
+
+        const textureSourceSlotImg = textureSourceSlot.querySelector('img');
+        textureSourceSlotImg.id = textureSource.id;
+        textureSourceSlotImg.src = textureSource.previewImageSrc;
+
+        if(textureSource.removable) {
+            const removeTextureSourceButton = removeTextureSourceButtonFor(textureSourceSlot);
+            textureSourceSlot.appendChild(removeTextureSourceButton);
+        };
+
+        textureSourceSlot.setAttribute('data-has-texture', true);
     };
 
     function loadTextureSource(textureSource) {
-        textureSources[textureSource.id] = textureSource;
-
         const textureSourceSlot = nextFreeTextureSourceSlot();
         if(!textureSourceSlot)
             throw new CantAddMoreCustomTextureSourcesError();
-        const textureSourceSlotImg = textureSourceSlot.querySelector('img');
 
-        textureSourceSlot.title = textureSource.name;
-        textureSourceSlotImg.id = textureSource.id;
-        textureSourceSlotImg.src = textureSource.previewImageSrc;
+        fillTextureSlotWith(textureSourceSlot, textureSource);
+
+        textureSources[textureSource.id] = textureSource;
     };
 
     function newTextureSourceFromFileContent(fileName, fileContent) {
@@ -695,6 +736,7 @@ $( document ).ready(function()
             id: newRandomName,
             name: fileName,
             previewImageSrc: fileContent,
+            removable: true,
             createTexture: function() {
                 const texture = {
                     type: "tex_2D",
@@ -711,7 +753,38 @@ $( document ).ready(function()
                 return texture;
             }
         };
+    };
+
+    function disableCustomTexturesUpload() {
+        $('#maxCustomTextureSourcesReachedMessage').show();
+        $('#uploadCustomTexture').prop('disabled', true);
+    };
+
+    function enableCustomTexturesUpload() {
+        $('#maxCustomTextureSourcesReachedMessage').hide();
+        $('#uploadCustomTexture').prop('disabled', false);
+    };
+
+    function reloadCustomTexturesUpload() {
+        const isThereAnyFreeTextureSlot = !!nextFreeTextureSourceSlot();
+        if(isThereAnyFreeTextureSlot) {
+            enableCustomTexturesUpload();
+        } else {
+            disableCustomTexturesUpload();
+        }
     }
+
+    function reloadCustomTexturesUploadOnChangesToTextureSourceSlots() {
+        const observer = new MutationObserver(function(mutations) {
+            reloadCustomTexturesUpload();
+        });
+        var config = { attributeFilter: ["data-has-texture"] };
+        document.querySelectorAll('[data-has-texture]').forEach(function(textureSourceSlot) {
+            observer.observe(textureSourceSlot, config);
+        });   
+    };
+
+    reloadCustomTexturesUploadOnChangesToTextureSourceSlots();
 
     $("#texturePanel")
         .dialog({
@@ -784,8 +857,7 @@ $( document ).ready(function()
                     loadTextureSource(newTextureSource);
                 } catch (e){
                     if (e instanceof CantAddMoreCustomTextureSourcesError) {
-                      $('#maxCustomTextureSourcesReachedMessage').show();
-                      $('#uploadCustomTexture').prop('disabled', true);
+                        console.warn(`Texture ${fileName} could not be uploaded because the texture panel is full.`);
                     } else {
                         throw e;
                     }
