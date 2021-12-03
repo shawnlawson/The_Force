@@ -73,7 +73,7 @@ $( document ).ready(function()
         {
             populateMIDIInSelect();
         })
-        .on("selectmenuchange", function(event)
+        .on("selectmenuselect", function(event)
         {
             startLoggingMIDIInput($("#selectMIDIIn").val());
         });
