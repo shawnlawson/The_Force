@@ -31,8 +31,8 @@ vec3 brown = vec3(0.96, 0.474, 0.227);
 vec2 uvN(){return (gl_FragCoord.xy / resolution);}
 vec2 uv(){return (gl_FragCoord.xy / resolution * 2.0 -1.0) * vec2(resolution.x/resolution.y, 1.0);}
 
-float theta = atan(uv().x, uv().y) / PI2 + .5;
-float phi = log(length(uv()));
+float theta(){return atan(uv().x, uv().y) / PI2 + .5};
+float phi(){return log(length(uv()))};
 
 float kale(vec2 p, float n) {
   return abs(mod(atan(p.x, p.y), n) - n * .5);
