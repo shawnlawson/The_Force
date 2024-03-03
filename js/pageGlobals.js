@@ -13,6 +13,7 @@ var mFpsFrame = 0.0;
 var quality = 2;
 var meter = null;
 var mSound = null;
+var mSpeed = null;
 var mWebCam = null;
 var bandsOn = false;
 var mTime;
@@ -419,6 +420,7 @@ $( document ).ready(function()
         {   // build a new sound object
             mSound = {};
             mSound.low = mSound.mid = mSound.upper = mSound.high = 0.0;
+            mSpeed.low = mSpeed.mid = mSpeed.upper = mSpeed.high = 0.0;
             mSound.mAnalyser = mAudioContext.createAnalyser();
             mSound.mAnalyser.smoothingTimeConstant = 0.5;
             mSound.mAnalyser.fft = 512;
@@ -471,6 +473,7 @@ $( document ).ready(function()
         f *= .003921569; // 1/255
         drawBandsRect(0, aCanvas, f);
         mSound.low = f;
+        mSpeed.low += f
 
         f = 0.0;
         for(; i < b; i++)
@@ -480,6 +483,7 @@ $( document ).ready(function()
         f *= .003921569; // 1/255
         drawBandsRect(1, aCanvas, f);
         mSound.mid = f;
+        mSpeed.mid += f;
 
         f = 0.0;
         for(; i < c; i++)
@@ -489,6 +493,7 @@ $( document ).ready(function()
         f *= .003921569; // 1/255
         drawBandsRect(2, aCanvas, f);
         mSound.upper = f;
+        mSpeed.upper += f;
 
         f = 0.0;
         for(; i < d; i++)
@@ -498,6 +503,7 @@ $( document ).ready(function()
         f *= .003921569; // 1/255
         drawBandsRect(3, aCanvas, f);
         mSound.high = f;
+        mSpeed.high += f
     }
 
     function drawBandsRect(which, ctx, value)

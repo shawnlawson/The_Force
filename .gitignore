@@ -3,3 +3,7 @@ shows/*
 
 IO_Bridge/*
 .DS_Store
+
+server.pem
+key.pem
+

@@ -195,6 +195,7 @@ function newShader(vs, shaderCode) {
     ch4 = gl.getUniformLocation(mProgram, "backbuffer");
 
     bs = gl.getUniformLocation(mProgram, "bands");
+    speed = gl.getUniformLocation(mProgram, "speed");
     bandsTimeU = gl.getUniformLocation(mProgram, "bandsTime");
 
     //OSC uniforms
@@ -508,6 +509,9 @@ function paint() {
         if (bs !== null) {
 
             gl.uniform4f(bs, mSound.low, mSound.mid, mSound.upper, mSound.high);
+        }
+        if (speed !== null) {
+            gl.uniform4f(speed, mSpeed.low, mSpeed.mid, mSpeed.upper, mSpeed.high);
         }
         if (bandsTimeU !== null) { //this is for per fft band time elapsed events
             if (mSound.low > .7)

@@ -8,6 +8,7 @@ uniform vec4      date;
 uniform vec3      channelResolution[4];
 uniform vec4      bands;
 uniform vec4      bandsTime;
+uniform vec4      speed;
 uniform sampler2D backbuffer;
 
 float PI = 3.14159;
