@@ -419,6 +419,7 @@ $( document ).ready(function()
         // if (mSound === null)
         {   // build a new sound object
             mSound = {};
+            mSpeed = {};
             mSound.low = mSound.mid = mSound.upper = mSound.high = 0.0;
             mSpeed.low = mSpeed.mid = mSpeed.upper = mSpeed.high = 0.0;
             mSound.mAnalyser = mAudioContext.createAnalyser();
