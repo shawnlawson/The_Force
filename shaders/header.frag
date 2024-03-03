@@ -32,7 +32,7 @@ vec2 uvN(){return (gl_FragCoord.xy / resolution);}
 vec2 uv(){return (gl_FragCoord.xy / resolution * 2.0 -1.0) * vec2(resolution.x/resolution.y, 1.0);}
 
 float theta = atan(uv().x, uv().y) / PI2 + .5;
-float phi = log(length(uv()));s
+float phi = log(length(uv()));
 
 float kale(vec2 p, float n) {
   return abs(mod(atan(p.x, p.y), n) - n * .5);
